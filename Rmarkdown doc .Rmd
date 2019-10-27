@@ -9,6 +9,9 @@ output: html_document
 # Downloading require packages 
 install.packages('eurostat')
 library(eurostat)
+library(dplyr)
+library(tidyr)
+library(ggplot2)
 ```
 
 ```{r}
@@ -21,3 +24,23 @@ doc5 <- get_eurostat(id= "une_rt_a", time_format = "date", filters = "none", typ
 doc6 <- get_eurostat(id= "une_ltu_a", time_format = "date", filters = "none", type = "code", cache = TRUE)
 ```
 
+```{r}
+# Check if there are missing values
+any(is.na(doc1))
+any(is.na(doc2))
+any(is.na(doc3))
+any(is.na(doc4))
+any(is.na(doc5))
+any(is.na(doc6))
+```
+
+```{r}
+# No missing value in doc 1 and 5 but missing values in doc 2, 3, 4, 6 = check how many
+sum(is.na(doc2)) 
+sum(is.na(doc3)) 
+sum(is.na(doc4)) 
+sum(is.na(doc6)) 
+```
+```{r}
+# Remove NA
+```
