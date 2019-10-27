@@ -1,0 +1,23 @@
+---
+title: "Gender equality in labour market doc"
+author: "moi"
+date: "27/10/2019"
+output: html_document
+---
+
+```{r, include=FALSE}
+# Downloading require packages 
+install.packages('eurostat')
+library(eurostat)
+```
+
+```{r}
+# Downloading and naming the data frame from eurostat
+doc1 <- get_eurostat(id= "lfsi_emp_a", time_format = "date", filters = "none", type = "code", cache = TRUE)
+doc2 <- get_eurostat(id= "lfsa_ergaed", time_format = "date", filters = "none", type = "code", cache = TRUE)
+doc3 <- get_eurostat(id= "lfsa_eppgan", time_format = "date", filters = "none", type = "code", cache = TRUE)
+doc4 <- get_eurostat(id= "lfsa_etgar", time_format = "date", filters = "none", type = "code", cache = TRUE)
+doc5 <- get_eurostat(id= "une_rt_a", time_format = "date", filters = "none", type = "code", cache = TRUE)
+doc6 <- get_eurostat(id= "une_ltu_a", time_format = "date", filters = "none", type = "code", cache = TRUE)
+```
+
