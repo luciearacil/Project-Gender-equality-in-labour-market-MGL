@@ -24,6 +24,9 @@ doc5 <- get_eurostat(id= "une_rt_a", time_format = "date", filters = "none", typ
 doc6 <- get_eurostat(id= "une_ltu_a", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc7<- get_eurostat(id= "demo_gind", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc8<- get_eurostat(id= "	nama_10_gdp", time_format = "date", filters = "none", type = "code", cache = TRUE)
+doc9<- get_eurostat(id= "TESEM180", time_format = "date", filters = "none", 
+type = "code", cache = TRUE)
+
 ```
 
 ```{r}
@@ -36,6 +39,7 @@ any(is.na(doc5))
 any(is.na(doc6))
 any(is.na(doc7))
 any(is.na(doc8))
+any(is.na(doc9))
 ```
 
 ```{r}
