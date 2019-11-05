@@ -7,11 +7,12 @@ output: html_document
 
 ```{r, include=FALSE}
 # Downloading require packages 
-install.packages('eurostat')
+#install.packages('eurostat')
 library(eurostat)
 library(dplyr)
 library(tidyr)
 library(ggplot2)
+library(lubridate)
 ```
 
 ```{r}
@@ -24,7 +25,7 @@ doc5 <- get_eurostat(id= "une_rt_a", time_format = "date", filters = "none", typ
 doc6 <- get_eurostat(id= "une_ltu_a", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc7<- get_eurostat(id= "demo_gind", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc8<- get_eurostat(id= "nama_10_gdp", time_format = "date", filters = "none", type = "code", cache = TRUE)
-doc9<- get_eurostat(id= "earn_gr_gpgr2", time_format = "date", filters = "none", 
+doc9<- get_eurostat(id= "earn_gr_gpgr2", time_format = "date", filters = "none",
 type = "code", cache = TRUE)
 
 ```
@@ -64,5 +65,32 @@ sum(is.na(doc9))
 ```
 
 
+# pour les 3 premieres data
+```{r}
+# date format
+doc1$time <- format(doc1$time, "%Y")
+doc2$time <- format(doc2$time, "%Y")
+doc3$time <- format(doc3$time, "%Y")
+doc9$time <- format(doc9$time,"%Y")
+doc7$time <- format(doc7$time,"%Y")
+
+# only the doc8 is not as date so we change it in date format before
+class(doc8$time)
+doc8$time=as.Date(doc8$time,"%Y-%m-%d")
+doc8$time <- format(doc8$time,"%Y")
 
 
+# filtre
+doc1=doc1 %>% filter(time>=2006)
+doc2=doc2 %>% filter(time>=2006)
+doc3=doc3 %>% filter(time>=2006)
+doc7=doc7 %>% filter(time>=2006)
+doc8=doc8 %>% filter(time>=2006)
+doc9=doc9 %>% filter(time>=2006)
+
+
+doc1=doc1%>% filter(age== c("Y20-64"))
+doc2=doc2%>% filter(age== c("Y20-64"))
+doc3=doc3%>% filter(age== c("Y20-64"))
+
+```
