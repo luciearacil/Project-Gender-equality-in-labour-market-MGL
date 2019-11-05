@@ -103,4 +103,20 @@ doc4=doc4%>% filter(age== "Y20-64")
 doc6=doc6%>% filter(age== "Y20-64")
 doc5=doc5%>% filter(age== "TOTAL")
 
+
+
+# clean doc1
+
+# delete age column
+doc1=doc1%>% select(-"age")
+doc2=doc2%>% select(-"age")
+doc3=doc3%>% select(-"age")
+doc4=doc4%>% select(-"age")
+doc5=doc5%>% select(-"age")
+doc6=doc6%>% select(-"age")
+
+
+#unit column we keep just PC (pourcentage)
+doc1=doc1%>% filter(unit== "PC")
+doc1=doc1%>% select(-"unit")
 ```
