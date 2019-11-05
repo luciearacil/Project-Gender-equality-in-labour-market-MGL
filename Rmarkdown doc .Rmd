@@ -71,8 +71,12 @@ sum(is.na(doc9))
 doc1$time <- format(doc1$time, "%Y")
 doc2$time <- format(doc2$time, "%Y")
 doc3$time <- format(doc3$time, "%Y")
-doc9$time <- format(doc9$time,"%Y")
-doc7$time <- format(doc7$time,"%Y")
+doc4$time <- format(doc4$time, "%Y")
+doc5$time <- format(doc5$time, "%Y")
+doc6$time <- format(doc6$time, "%Y")
+doc7$time <- format(doc7$time, "%Y")
+doc9$time <- format(doc9$time, "%Y")
+
 
 # only the doc8 is not as date so we change it in date format before
 class(doc8$time)
@@ -84,13 +88,19 @@ doc8$time <- format(doc8$time,"%Y")
 doc1=doc1 %>% filter(time>=2006)
 doc2=doc2 %>% filter(time>=2006)
 doc3=doc3 %>% filter(time>=2006)
+doc4=doc4 %>%filter(time>=2006)
+doc5=doc5 %>%filter(time>=2006)
+doc6=doc6 %>%filter(time>=2006)
 doc7=doc7 %>% filter(time>=2006)
 doc8=doc8 %>% filter(time>=2006)
 doc9=doc9 %>% filter(time>=2006)
 
 
-doc1=doc1%>% filter(age== c("Y20-64"))
-doc2=doc2%>% filter(age== c("Y20-64"))
-doc3=doc3%>% filter(age== c("Y20-64"))
+doc1=doc1%>% filter(age== "Y20-64")
+doc2=doc2%>% filter(age== "Y20-64")
+doc3=doc3%>% filter(age== "Y20-64")
+doc4=doc4%>% filter(age== "Y20-64")
+doc6=doc6%>% filter(age== "Y20-64")
+doc5=doc5%>% filter(age== "TOTAL")
 
 ```
