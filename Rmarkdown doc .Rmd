@@ -22,6 +22,8 @@ doc3 <- get_eurostat(id= "lfsa_eppgan", time_format = "date", filters = "none", 
 doc4 <- get_eurostat(id= "lfsa_etgar", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc5 <- get_eurostat(id= "une_rt_a", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc6 <- get_eurostat(id= "une_ltu_a", time_format = "date", filters = "none", type = "code", cache = TRUE)
+doc7<- get_eurostat(id= "demo_gind", time_format = "date", filters = "none", type = "code", cache = TRUE)
+doc8<- get_eurostat(id= "	nama_10_gdp", time_format = "date", filters = "none", type = "code", cache = TRUE)
 ```
 
 ```{r}
@@ -32,6 +34,8 @@ any(is.na(doc3))
 any(is.na(doc4))
 any(is.na(doc5))
 any(is.na(doc6))
+any(is.na(doc7))
+any(is.na(doc8))
 ```
 
 ```{r}
@@ -43,4 +47,11 @@ sum(is.na(doc6))
 ```
 ```{r}
 # Remove NA
+doc2=na.omit(doc2)
+doc3=na.omit(doc3)
+doc4=na.omit(doc4)
+doc6=na.omit(doc6)
+
 ```
+
+
