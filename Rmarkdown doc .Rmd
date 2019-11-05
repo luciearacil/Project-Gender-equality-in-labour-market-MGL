@@ -23,8 +23,8 @@ doc4 <- get_eurostat(id= "lfsa_etgar", time_format = "date", filters = "none", t
 doc5 <- get_eurostat(id= "une_rt_a", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc6 <- get_eurostat(id= "une_ltu_a", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc7<- get_eurostat(id= "demo_gind", time_format = "date", filters = "none", type = "code", cache = TRUE)
-doc8<- get_eurostat(id= "	nama_10_gdp", time_format = "date", filters = "none", type = "code", cache = TRUE)
-doc9<- get_eurostat(id= "TESEM180", time_format = "date", filters = "none", 
+doc8<- get_eurostat(id= "nama_10_gdp", time_format = "date", filters = "none", type = "code", cache = TRUE)
+doc9<- get_eurostat(id= "earn_gr_gpgr2", time_format = "date", filters = "none", 
 type = "code", cache = TRUE)
 
 ```
@@ -41,21 +41,28 @@ any(is.na(doc7))
 any(is.na(doc8))
 any(is.na(doc9))
 ```
-
-```{r}
-# No missing value in doc 1 and 5 but missing values in doc 2, 3, 4, 6 = check how many
-sum(is.na(doc2)) 
-sum(is.na(doc3)) 
-sum(is.na(doc4)) 
-sum(is.na(doc6)) 
-```
 ```{r}
 # Remove NA
 doc2=na.omit(doc2)
 doc3=na.omit(doc3)
 doc4=na.omit(doc4)
 doc6=na.omit(doc6)
-
+doc7=na.omit(doc7)
+doc8=na.omit(doc8)
+doc9=na.omit(doc9)
 ```
+
+```{r}
+# Check if the missing value are gone
+sum(is.na(doc2)) 
+sum(is.na(doc3)) 
+sum(is.na(doc4)) 
+sum(is.na(doc6)) 
+sum(is.na(doc7)) 
+sum(is.na(doc8)) 
+sum(is.na(doc9)) 
+```
+
+
 
 
