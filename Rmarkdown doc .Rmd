@@ -10,6 +10,7 @@ output: html_document
 #install.packages('eurostat')
 library(eurostat)
 library(dplyr)
+library(tidyverse)
 library(tidyr)
 library(ggplot2)
 library(lubridate)
@@ -105,8 +106,6 @@ doc5=doc5%>% filter(age== "TOTAL")
 
 
 
-# clean doc1
-
 # delete age column
 doc1=doc1%>% select(-"age")
 doc2=doc2%>% select(-"age")
@@ -116,7 +115,25 @@ doc5=doc5%>% select(-"age")
 doc6=doc6%>% select(-"age")
 
 
-#unit column we keep just PC (pourcentage)
-doc1=doc1%>% filter(unit== "PC")
+# we keep just PC (pourcentage) unit column
+doc1=doc1%>% filter(unit== "PC_POP")
 doc1=doc1%>% select(-"unit")
+
+doc2=doc2%>% select(-"unit") # il n'y a que PC
+doc3=doc3%>% select(-"unit")
+doc9=doc9%>% select(-"unit")
+
+```
+```{r}
+# rename column 
+doc1 = doc1 %>% 
+  rename(Country =geo)# on peut mettre des virgules pour renomer les différentes colonne d'un même tableau
+
+# renomer l'interieur des colonnes
+
+library(car)
+#car::recode()
+doc1$indic_em <- car::recode(doc1$indic_em,
+  '"ACT"="Actif" ')
+    
 ```
