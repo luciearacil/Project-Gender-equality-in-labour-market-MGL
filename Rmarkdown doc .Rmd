@@ -14,6 +14,7 @@ library(tidyverse)
 library(tidyr)
 library(ggplot2)
 library(lubridate)
+library(car)
 ```
 
 ```{r}
@@ -66,7 +67,6 @@ sum(is.na(doc9))
 ```
 
 
-# pour les 3 premieres data
 ```{r}
 # date format
 doc1$time <- format(doc1$time, "%Y")
@@ -131,9 +131,46 @@ doc1 = doc1 %>%
 
 # renomer l'interieur des colonnes
 
-library(car)
-#car::recode()
 doc1$indic_em <- car::recode(doc1$indic_em,
-  '"ACT"="Actif" ')
-    
+  '"ACT"="Actif"')
+doc1$indic_em <- car::recode(doc1$indic_em,
+  '"EMP_LFS"="Total_Employment"')
+EmpAct=doc1
+TA=doc1%>%filter(indic_em=="Actif")
+
+# graphique europe 28 Actif ( femme homme total, evolution à travers le temps)
+
+TA %>% group_by(Country)
+
+ggplot(TA,aes(x=time,y=values,colour = sex))+geom_line()+ facet_wrap(.~Country)
+
+
+doc2 = doc2%>% 
+  rename(Educ = isced11)
+
+doc2$Educ<- car::recode(doc2$Educ,'
+  "ED0-2"="low";"ED3_4"="Inter";"ED5-8"="high"')
+
+doc2=doc2 %>% filter(Educ !="NRP")
+
+
+doc3=doc3%>% select(-"citizen")
+
+doc4=doc4 %>% filter(reason !="NRP")
+doc4 = doc4 %>% 
+  rename(PC_emp =unit)
+doc4$PC_emp <- car::recode(doc4$PC_emp,'
+  "PC_SAL"="employment";"PC_SAL_TEMP"="Temporary"')
+doc4$reason <- car::recode(doc4$reason,'
+  "INVTMP"="NocoulJob";"WANTTMP"="NowantJob"')
+
+doc5=doc5 %>% filter(unit !="THS_PER")
+
+doc6=doc6 %>% filter(unit !="THS_PER")
+
+doc7$indic_de <- car::recode(doc7$indic_de,'
+  "JAN"="poptot";"MJAN"="pop_M";"FJAN"="pop_F";"NATGROWRT"="NAT_VAR";"CNMIGRAT"="Migr";"GROW"="VAR_POP"')
+
 ```
+
+
