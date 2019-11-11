@@ -15,7 +15,6 @@ library(tidyr)
 library(ggplot2)
 library(lubridate)
 library(car)
-library(RMySQL)
 ```
 
 ```{r}
@@ -124,107 +123,83 @@ doc9=doc9%>% select(-"unit")
 ```
 
 ```{r}
-# Rename columns, rename labels inside columns, suppress useless stuffs and rename documents
+# rename columns 
 
-              ### Reminder supprimer total partout car ils dérangent quand on fait les graphiques et ils                          peuvent être calculé en additionnant H + F 
+## doc 1 (A REVOIR column values)
+doc1 = doc1 %>% 
+rename(country=geo, category=indic_em) 
+  ### pourquoi pas créer 2 tableaux : un % actif et un % total employment, renommer la column value by % actif dans   le tableau 1 et la column value by % total employment dans le tableau 2, but = supprimer la colomne category et     que ce soit plus compréhensible quand on va tout regrouper 
+  ### supprimer la colum % total employement parce que déjà présent dans tableau 2 (j'ai vérif et c'est les mêmes %)
 
-## doc 1 : PC_Act
-doc1 <- doc1 %>% 
-  rename(country=geo, category=indic_em) 
-doc1$category <- car::recode(doc1$category,'"ACT"="Actif"')
-doc1$category <- car::recode(doc1$category,'"EMP_LFS"="Total_Employment"')
-PC_Act <- doc1 %>% filter(category=="Actif")
-PC_Act <- PC_Act %>% 
-  rename(PC_act=values) 
+## doc 2 (OK)
+doc2 = doc2%>% 
+rename(educ_level=isced11, country=geo, employement_rate=values)
 
-## doc 2 : PC_Emp 
-doc2 <- doc2 %>% 
-  rename(educ_level=isced11, country=geo, PC_emp=values)  %>%
-  filter(educ_level !="NRP")
-doc2$educ_level <- car::recode(doc2$educ_level,'"ED0-2"="low";"ED3_4"="Inter";"ED5-8"="high"')
-PC_Emp <- doc2
+## doc 3 (OK)
+doc3 = doc3%>% 
+rename(country=geo, parttime_rate_onemploy=values)
 
-## doc 3 : PC_Partime 
-PC_Partime <- doc3 %>% 
-  rename(country=geo, PC_parttime_onemp=values) %>% 
-  select(-"citizen")
+## doc 4
+doc4 = doc4%>% 
+rename(country=geo, )
 
-## doc 4 : PC_Temp 
-doc4 <- doc4 %>% 
-  rename(country=geo, PC_emp=unit)  %>% 
-  ### Column PC_emp diviser entre employement et part-time employement qu'est ce que ça veut dire ??? doit on garder   que part time ?? Où le % part time est construit par rapport au % employment ? 
-  filter(reason !="NRP") 
-  ### Filter TOTAL mais que pour la category TEMPORARY parce qu'on se fou de savoir que le total des cinq = 100% ? 
+## doc 5
+
+## doc 6
+
+## doc 7
+
+## doc 8
+
+## doc 9
+```
+
+```{r}
+# rename the label inside the columns
+  
+## doc 1 (OK)
+doc1$category <- car::recode(doc1$category,
+  '"ACT"="Actif"')
+doc1$category <- car::recode(doc1$category,
+  '"EMP_LFS"="Total_Employment"')
+EmpAct=doc1
+TA=doc1%>%filter(category=="Actif")
+TA %>% group_by(country)
+
+## doc 2 (OK)
+doc2$educ_level<- car::recode(doc2$educ_level,'
+  "ED0-2"="low";"ED3_4"="Inter";"ED5-8"="high"')
+doc2=doc2 %>% filter(educ_level !="NRP")
+
+## doc 3 (Ok)
+doc3=doc3%>% select(-"citizen")
+
+## doc 4
+doc4=doc4 %>% filter(reason !="NRP")
+doc4 = doc4 %>% 
+  rename(PC_emp =unit)
 doc4$PC_emp <- car::recode(doc4$PC_emp,'
   "PC_SAL"="employment";"PC_SAL_TEMP"="Temporary"')
 doc4$reason <- car::recode(doc4$reason,'
   "INVTMP"="NocoulJob";"WANTTMP"="NowantJob"')
-PC_Temp <- doc4
 
-## doc 5 : PC_Unemp 
-### pourquoi pas le supprimer ??? on peut calculer % unemp grâce à emp ? 
-PC_Unemp <- doc5 %>% 
-  rename(country=geo, PC_unemp=unit) %>% 
-  filter(PC_unemp !="THS_PER", PC_unemp !="PC_POP") %>% ### def chomage = unemp / pop active
-  select(-PC_unemp) %>% 
-  rename(PC_unemp=values)
+## doc 5
+doc5=doc5 %>% filter(unit !="THS_PER")
 
-## doc 6 : PC_Ltunemp 
-PC_Ltunemp <- doc6 %>% 
-  rename(country=geo, PC_unemp=values) %>% 
-  filter(unit !="THS_PER") %>% 
-  select(-indic_em)
+## doc 6
+doc6=doc6 %>% filter(unit !="THS_PER")
 
-## doc 7 : Pop_evol 
-doc7$indic_de <- car::recode(doc7$indic_de,'"JAN"="T";"MJAN"="M";"FJAN"="F"')
-doc7 <- doc7  %>%  filter(indic_de %in% c("T","M", "F"))
-Pop_evol <- doc7
+## doc 7
+doc7$indic_de <- car::recode(doc7$indic_de,'
+  "JAN"="poptot";"MJAN"="pop_M";"FJAN"="pop_F";"NATGROWRT"="NAT_VAR";"CNMIGRAT"="Migr";"GROW"="VAR_POP"')
 
-## doc 8 : GDPandVA 
-GDPandVA <- doc8  %>%  
-  filter(na_item %in% c("B1GQ","B1G"))  %>%  
-  filter(unit == "CP_MEUR")
-
-## doc 9 : PC_Gapaid 
-### Voir quoi faire de la colonne nace_r2????
-PC_Gapaid <- doc9 %>% 
-  rename(country=geo, PC_gap=values)
+## doc 8
+## doc 9
 ```
 
-```{r}
-# Merge table 
-dataframe <- inner_join(PC_Emp, PC_Partime, by = c("time", "country", "sex"))
-### PROBLEM PCPARTIMEEMP x4-5 les mêmes valeurs
-```
+#merge table 
 
-```{r}
-# Rename label country (quand tous les tableaux seront mergé)
-```
-
-```{r}
-# view relation between two variables
-plot(PC_Act$sex, PC_Act$PC_act) 
-plot(PC_Act$country, PC_Act$PC_act) 
-
-plot(PC_Temp) 
-plot(PC_Partime) 
-plot(PC_Unemp) 
-plot(PC_Ltunemp) 
-plot(Pop_evol)
-plot(GDPandVA)
-plot(PC_Gapaid) 
-```
-
-```{r}
-# histogram of a single variable
-hist() 
-```
-
-spread(data, bare name of column containing keys, bare name of column containing values) : long to wide
-separate(data set, name of the column to split into two, c(“variable1”, “variable2”), sep =”…” ): to separate into two columns
-
-data_frameZ <- data_frameX %>%
-      inner_join(data_frameY, by = c("variable1","variable2"))
+#rename label country
 
 ```{r}
 # Graph 28 states europe actif population (woman, man, total, evolution over y)
