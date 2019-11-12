@@ -29,7 +29,7 @@ doc6 <- get_eurostat(id= "une_ltu_a", time_format = "date", filters = "none", ty
 doc7<- get_eurostat(id= "demo_gind", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc8<- get_eurostat(id= "nama_10_gdp", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc9<- get_eurostat(id= "earn_gr_gpgr2", time_format = "date", filters = "none",
-type = "code", cache = TRUE)
+type = "code", cache = TRUE)   
 ```
 
 ```{r}
@@ -133,9 +133,10 @@ doc1 <- doc1 %>%
   rename(country=geo, category=indic_em) 
 doc1$category <- car::recode(doc1$category,'"ACT"="Actif"')
 doc1$category <- car::recode(doc1$category,'"EMP_LFS"="Total_Employment"')
-PC_Act <- doc1 %>% filter(category=="Actif")
-PC_Act <- PC_Act %>% 
-  rename(PC_act=values) 
+PC_Act <- doc1 %>% 
+  filter(category=="Actif") %>% 
+  rename(PC_act=values) %>% 
+  filter(sex !="T")
 
 ## doc 2 : PC_Emp 
 doc2 <- doc2 %>% 
@@ -205,26 +206,15 @@ dataframe <- inner_join(PC_Emp, PC_Partime, by = c("time", "country", "sex"))
 # view relation between two variables
 plot(PC_Act$sex, PC_Act$PC_act) 
 plot(PC_Act$country, PC_Act$PC_act) 
-
-plot(PC_Temp) 
-plot(PC_Partime) 
-plot(PC_Unemp) 
-plot(PC_Ltunemp) 
-plot(Pop_evol)
-plot(GDPandVA)
-plot(PC_Gapaid) 
 ```
-
-```{r}
-# histogram of a single variable
-hist() 
-```
-
 spread(data, bare name of column containing keys, bare name of column containing values) : long to wide
 separate(data set, name of the column to split into two, c(“variable1”, “variable2”), sep =”…” ): to separate into two columns
 
 data_frameZ <- data_frameX %>%
       inner_join(data_frameY, by = c("variable1","variable2"))
+
+# histogram of a single variable
+hist() 
 
 ```{r}
 # Graph 28 states europe actif population (woman, man, total, evolution over y)
