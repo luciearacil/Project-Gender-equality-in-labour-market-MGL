@@ -228,7 +228,11 @@ data_frameZ <- data_frameX %>%
 
 ```{r}
 # Graph 28 states europe actif population (woman, man, total, evolution over y)
-ggplot(TA,aes(x=time,y=values,colour = sex))+geom_line()+ facet_wrap(.~country)
+plot1 <- PC_Act %>% 
+  filter(country =="EU28") %>% 
+  group_by(sex) %>%
+  ggplot(. ,) + geom_point(aes(x=time, y=PC_act,colour=sex)) + labs(title="Evolution of Activity Rate between wooman & men ") + xlab("time") + ylab("activity rate")
+print(plot1)
 ```
 
 
