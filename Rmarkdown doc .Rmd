@@ -282,9 +282,19 @@ MeancountGP # 16%
 
 
 # Graph 28 states europe actif population (woman, man, total, evolution over y)
+
+PC_GapFem= PC_Act %>% filter(sex=="F")
+PC_GapFem=PC_GapFem %>% rename(f_act= PC_act) 
+PC_GapFem=PC_GapFem%>%  select(f_act,time,country)
+PC_GapMal= PC_Act %>% filter(sex=="M")
+PC_GapMal=PC_GapMal%>%rename(m_act= PC_act) %>% select(m_act,time,country)
+PC_ActGap=left_join(PC_GapFem,PC_GapMal,by=c('time','country'))
+
+PC_ActGap$gap=PC_ActGap$m_act-PC_ActGap$f_act
+
 PC_Act %>% 
   filter(country =="EU28") %>% group_by(sex)%>% ggplot(.,) +
-  geom_line(aes(x=time,y=PC_act,colour=sex,group=sex),size=0.5) + labs(title="Evolution of Activity   Rate between wooman & men ") + xlab("time") + ylab("activity rate")+ ylim(40,90)
+  geom_line(aes(x=time,y=PC_act,colour=sex,group=sex),size=1) +  labs(title="Evolution of Activity   Rate between wooman & men ") + xlab("time") + ylab("activity rate")+ ylim(40,90)+theme(axis.text.x = element_text(angle=38))
 
 
 # Evolution of activity rate in UE of 28
@@ -294,59 +304,70 @@ PC_Act %>%
 
 
 # Data of women activity rate in 2018
-PC_Act_F2018=PC_Act %>% 
-  filter(! country %in% c("EA17","EA18","EA19","EU15","EU28"))%>%
-  filter(sex=="F")%>%filter(time=="2018")
 
-PC_Act_F2018 <- PC_Act_F2018 %>% 
+#test gap
+PC_ActGapTime=PC_ActGap
+PC_ActGap=PC_ActGap %>% 
+  filter(! country %in% c("EA17","EA18","EA19","EU15","EU28"))%>% 
+  select(- f_act,m_act)%>%filter(time=="2018")
+
+PC_ActGap <- PC_ActGap %>% 
   rename(CNTR_CODE=country) 
 
-PC_Act_F2018$class=cut_to_classes(PC_Act_F2018$PC_act, n=5, style="equal", decimals=1)
+PC_ActGap$class=cut_to_classes(PC_ActGap$gap, n=10, style="equal", decimals=1)
 geodata <- get_eurostat_geospatial(resolution = "60", nuts_level = "2", year = 2016)
-map_data <- inner_join(geodata, PC_Act_F2018)
+map_data <- inner_join(geodata, PC_ActGap)
 
   
   ggplot(data=map_data) + geom_sf(aes(fill=class),color="dim grey",size=0.1)+
-    scale_fill_brewer(palette = "YlOrRd") +
+    scale_fill_brewer(palette = "RdBu") +
     guides(fill = guide_legend(reverse=T, title = "euro")) +
-    labs(title="Activity rate of European woman in 2018") +
+    labs(title="Gender Gap of Activity rate in European Country in 2018") +
     theme_light()  +
     coord_sf(xlim=c(-40,44), ylim=c(25,70))
-  
+
 ```
 
 ```{r}
 
-# Find the country with the lowest woman activity rate  
-min2018=min(PC_Act_F2018$PC_act) # Turquie 
-PC_Act_F2018%>%filter(PC_act==min2018)%>%select(CNTR_CODE)
+# Find the country with the lowest gap activity rate between woman & men  
+mingap2018=min(PC_ActGap$gap) # LT lituania 3.8
+PC_ActGap%>%filter(gap==mingap2018)%>%select(CNTR_CODE)
 
-# graph of the evolution of Turquey  activity rate 
-plotturkey <- PC_Act %>% 
-  filter(country=="TR") %>%
-  ggplot(aes(x=time)) + geom_line(aes(x=time,y=PC_act,colour=sex,group=sex),size=0.5) + labs(title="Evolution of Activity Rate between wooman & men in turquie") + xlab("time") + ylab("activity rate")+ ylim(10,90)
-print(plotturkey)
+
+# Find the country with the higher woman activity rate  
+maxgap2018=max(PC_ActGap$gap) # Turquey 43%
+PC_ActGap%>%filter(gap==maxgap2018)%>%select(CNTR_CODE)
+
 
 # Find the country with the lowest woman activity  in Europe  
- PC_Act_FUE=PC_Act_F2018 %>% 
-  filter(! CNTR_CODE %in% c("EA17","EA18","EA19","EU15","EU28","TR","MK"))%>% filter(sex=="F")
-min2018UE=min(PC_Act_FUE$PC_act)
-PC_Act_F2018%>%filter(PC_act==min2018UE)%>%select(CNTR_CODE)
-       
-# Find the country with the higher woman activity rate  
-max2018=max(PC_Act_F2018$PC_act) # Sweden
-PC_Act_F2018%>%filter(PC_act==max2018)%>%select(CNTR_CODE)
+gap2018EU= PC_ActGap %>% 
+  filter(! CNTR_CODE %in% c("EA17","EA18","EA19","EU15","EU28","TR","MK","MT"))
+max2018UE=max(gap2018EU$gap) #20.6 Italy
+gap2018EU%>%filter(gap==max2018UE)%>%select(CNTR_CODE)
 
-# graph of the evolution of Sweden activity rate 
+# find the country  with the median gap activity rate
 
-PC_Act %>% 
-  filter(country=="SE") %>%
-  ggplot(aes(x=time)) + geom_line(aes(x=time,y=PC_act,colour=sex,group=sex),size=0.5) + labs(title="Evolution of Activity Rate between wooman & men in Sweden") + xlab("time") + ylab("activity rate")+ ylim(45,90)
+gapmoy=median(gap2018EU$gap) #9.5
+gap2018EU%>% filter(gap==gapmoy)%>%select(CNTR_CODE) # BE,Belgium
+
+# graph of the evolution of Belgium gap of activity rate 
+
+PC_ActGapTime %>% 
+  filter(country=="BE") %>% select(time,gap)%>% ggplot() + geom_line(aes(x=time,y=gap,group=1))+ labs(title="Evolution of Activity gap between woman & men in Belgium") + xlab("time") + ylab("gap of activity rate")
 
 
-PC_Act %>% 
-  filter(country=="IT") %>%
-  ggplot(aes(x=time)) + geom_line(aes(x=time,y=PC_act,colour=sex,group=sex),size=0.5) + labs(title="Evolution of Activity Rate between wooman & men in Italy") + xlab("time") + ylab("activity rate")+ ylim(10,90)
+# graph of the evolution of taly  gap of activity rate 
+PC_ActGapTime %>% 
+  filter(country=="IT") %>% select(time,gap)%>%
+  ggplot()+ geom_line(aes(x=time,y=gap,group=1),size=0.5) + labs(title="Evolution of Activity gap between wooman & men in Italy") + xlab("time") + ylab("activity rate")
+
+# graph of the evolution of taly  gap of activity rate 
+PC_ActGapTime %>% 
+  filter(country=="LT") %>% select(time,gap)%>%
+  ggplot()+ geom_line(aes(x=time,y=gap,group=1),size=0.5) + labs(title="Evolution of Activity gap between wooman & men in Lituania") + xlab("time") + ylab("activity rate")
+
+
 
 ```
 
@@ -370,10 +391,7 @@ PC_UnempUE=PC_Unemp %>%
   filter(country =="EU28") %>% filter(!sex%in%("T")) %>% group_by(sex)
 ggplot(PC_UnempUE) +
    geom_line(aes(x=time,y=PC_unemp,group=sex,colour=sex),size=0.5) + labs(title="Evolution of Unemployent Rate between wooman & men ") + xlab("time") + ylab("Unemployment rate")+ ylim(5,15)+theme(axis.text.x = element_text(angle=45))+geom_vline(xintercept = 9,
-                color = "purple", size=1.5)
-
-
-
+                color = "purple", size=1.5) + theme_classic()+theme(axis.text.x = element_text(angle=38))
 
 
 ```
