@@ -2,7 +2,9 @@
 title: "Gender equality in labour market doc"
 author: "moi"
 date: "27/10/2019"
-output: html_document
+output:
+  word_document: default
+  html_document: default
 ---
 
 ```{r, include=FALSE}
@@ -19,6 +21,8 @@ library(car)
 library(RMySQL)
 library(survival)
 library(mapproj)
+library(mosaic)
+library(scales)
 ```
 
 ```{r}
@@ -96,7 +100,7 @@ doc1=doc1 %>% filter(time>=2006)
 doc2=doc2 %>% filter(time>=2006)
 doc3=doc3 %>% filter(time>=2006)
 doc4=doc4 %>%filter(time>=2006)
-doc5=doc5 %>%filter(time>=2006)
+# doc5=doc5 %>%filter(time>=2006)
 doc6=doc6 %>%filter(time>=2006)
 doc7=doc7 %>% filter(time>=2006)
 doc8=doc8 %>% filter(time>=2006)
@@ -223,15 +227,6 @@ data_frameZ <- data_frameX %>%
 # histogram of a single variable
 hist() 
 
-```{r}
-# graph 3 
-# Graph 28 states europe actif population (woman, man, total, evolution over y)
-PC_Act %>% 
-  filter(country =="EU28") %>% group_by(sex)%>% ggplot(.,) +
-  geom_line(aes(x=time,y=PC_act,colour=sex,group=sex),size=0.5) + labs(title="Evolution of Activity   Rate between wooman & men ") + xlab("time") + ylab("activity rate")+ ylim(40,90)
-
-
-```
 
 ```{r}
 # Cartogram mean gap paid by gender between european countries in 2017
@@ -256,6 +251,26 @@ ggplot(mapdata, aes(x = long, y = lat, group = group))+
        subtitle="Avg. gap paid per country",
        fill="Gap paid (%)") + theme_light()+
   coord_map(xlim=c(-40,40), ylim=c(25,73))
+
+
+
+# filter PC_Gapaid2 for work on max min medium
+PC_Gapaid22017=PC_Gapaid2%>% filter(time=="2017")
+
+# Country with the lowest gender paid gap
+minGP2017=min(PC_Gapaid22017$mean_gappaid_percountry)
+mincountGP=PC_Gapaid22017 %>% filter(mean_gappaid_percountry==minGP2017)%>%select(country)
+mincountGP # RO, Roumania # 4.73% ( puis Marlte Belgique)
+
+# Country with the hogher gender paid gap
+maxGP2017=max(PC_Gapaid22017$mean_gappaid_percountry)
+maxcountGP=PC_Gapaid22017 %>% filter(mean_gappaid_percountry==maxGP2017)%>%select(country)
+maxcountGP # EE,Estonia # 20%, Republique Tcheque Autriche 
+
+# Country with the mean gender paid gap
+MeancountGP=PC_Gapaid22017%>%filter(country=="EU28")
+MeancountGP # 16%
+
 ```
 
 
@@ -264,6 +279,13 @@ ggplot(mapdata, aes(x = long, y = lat, group = group))+
 
 #graph 5 , Quel pays  à le plus faible taux d’activité des femmes (pour connaitre le nombre de femme au foyer ou les femmes découragées)
 # Pour l’année 2018, graph avec tous les pays en couleur  pour savoir le quel à le plus faible taux d’activité des femmes
+
+
+# Graph 28 states europe actif population (woman, man, total, evolution over y)
+PC_Act %>% 
+  filter(country =="EU28") %>% group_by(sex)%>% ggplot(.,) +
+  geom_line(aes(x=time,y=PC_act,colour=sex,group=sex),size=0.5) + labs(title="Evolution of Activity   Rate between wooman & men ") + xlab("time") + ylab("activity rate")+ ylim(40,90)
+
 
 # Evolution of activity rate in UE of 28
 PC_Act %>% 
@@ -296,27 +318,27 @@ map_data <- inner_join(geodata, PC_Act_F2018)
 ```{r}
 
 # Find the country with the lowest woman activity rate  
-min2018=min(PC_Act_F_2018$PC_act) # Turquie 
-PC_Act_F_2018%>%filter(PC_act==min2018)%>%select(country)
+min2018=min(PC_Act_F2018$PC_act) # Turquie 
+PC_Act_F2018%>%filter(PC_act==min2018)%>%select(CNTR_CODE)
+
 # graph of the evolution of Turquey  activity rate 
 plotturkey <- PC_Act %>% 
   filter(country=="TR") %>%
   ggplot(aes(x=time)) + geom_line(aes(x=time,y=PC_act,colour=sex,group=sex),size=0.5) + labs(title="Evolution of Activity Rate between wooman & men in turquie") + xlab("time") + ylab("activity rate")+ ylim(10,90)
-print(plot6turkey)
+print(plotturkey)
 
 # Find the country with the lowest woman activity  in Europe  
  PC_Act_FUE=PC_Act_F2018 %>% 
-  filter(! country %in% c("EA17","EA18","EA19","EU15","EU28","TR","MK"))%>% filter(sex=="F")
+  filter(! CNTR_CODE %in% c("EA17","EA18","EA19","EU15","EU28","TR","MK"))%>% filter(sex=="F")
 min2018UE=min(PC_Act_FUE$PC_act)
-PC_Act_F_2018%>%filter(PC_act==min2018UE)%>%select(country)
+PC_Act_F2018%>%filter(PC_act==min2018UE)%>%select(CNTR_CODE)
        
 # Find the country with the higher woman activity rate  
-max2018=max(PC_Act_F_2018$PC_act) # Sweden
-PC_Act_F_2018%>%filter(PC_act==max2018)%>%select(country)
+max2018=max(PC_Act_F2018$PC_act) # Sweden
+PC_Act_F2018%>%filter(PC_act==max2018)%>%select(CNTR_CODE)
 
 # graph of the evolution of Sweden activity rate 
 
-par(mfrow(1,2))
 PC_Act %>% 
   filter(country=="SE") %>%
   ggplot(aes(x=time)) + geom_line(aes(x=time,y=PC_act,colour=sex,group=sex),size=0.5) + labs(title="Evolution of Activity Rate between wooman & men in Sweden") + xlab("time") + ylab("activity rate")+ ylim(45,90)
@@ -340,6 +362,22 @@ maxnowant=max(NowantF$values)
 NowantF%>%filter(values==maxnowant) # Slovénie 46.5%
 
 ```
+
+
+```{r}
+# Evolution of unemployment over the time in EU
+PC_UnempUE=PC_Unemp %>% 
+  filter(country =="EU28") %>% filter(!sex%in%("T")) %>% group_by(sex)
+ggplot(PC_UnempUE) +
+   geom_line(aes(x=time,y=PC_unemp,group=sex,colour=sex),size=0.5) + labs(title="Evolution of Unemployent Rate between wooman & men ") + xlab("time") + ylab("Unemployment rate")+ ylim(5,15)+theme(axis.text.x = element_text(angle=45))+geom_vline(xintercept = 9,
+                color = "purple", size=1.5)
+
+
+
+
+
+```
+
 
 
 
