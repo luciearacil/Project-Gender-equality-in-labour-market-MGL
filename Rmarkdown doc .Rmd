@@ -154,7 +154,7 @@ PC_Emp <- doc2
 
 ## doc 3 : PC_Partime 
 PC_Partime <- doc3 %>% 
-  rename(country=geo, PC_parttime_onemp=values) %>% 
+  rename(country=geo, PC_parttime_onemp=values) %>% filter(citizen=="TOTAL")%>%
   select(-"citizen")
 
 ## doc 4 : PC_Temp 
@@ -267,9 +267,35 @@ maxGP2017=max(PC_Gapaid22017$mean_gappaid_percountry)
 maxcountGP=PC_Gapaid22017 %>% filter(mean_gappaid_percountry==maxGP2017)%>%select(country)
 maxcountGP # EE,Estonia # 20%, Republique Tcheque Autriche 
 
-# Country with the mean gender paid gap
-MeancountGP=PC_Gapaid22017%>%filter(country=="EU28")
-MeancountGP # 16%
+
+# Country with the median gender paid gap
+median(PC_Gapaid22017$mean_gappaid_percountry) #13.52 we don't find this in our data 
+medcountGP=13.5
+medcountGP=PC_Gapaid22017 %>% filter(mean_gappaid_percountry==13.5)%>%select(country)
+medcountGP # Finland
+
+# European gender paid gap
+EUGP=PC_Gapaid22017%>%filter(country=="EU28")
+EUGP # 16%
+
+# graph of the evolution og Gap paid in Europe 
+PC_Gapaid2 %>% 
+  filter(country == "EU28")%>% ggplot(.,) +
+  geom_line (aes(x=time,y=mean_gappaid_percountry,group=1 ) ,size=2) + 
+  labs(title="Evolution of gap paid over time in Europe  ") + xlab("time") +
+  ylab("gap paid") +
+  theme_light() + geom_vline(xintercept = 2, color = "purple", size=1.5) + 
+  geom_vline(xintercept = 4 , color = "purple", size=1.5)
+            
+# graph of the evolution of gap wages over tme
+
+PC_Gapaid2 %>% 
+  filter(country %in%c("FI","EE","RO")) %>% group_by(country)%>% ggplot(.,) +
+  geom_line(aes(x=time,y=mean_gappaid_percountry ,colour=country,group=country),size=1) +
+  labs(title="Evolution of gap paid over time  ") + xlab("time") + ylab("gap paid") +
+  scale_color_discrete(label= c(" Estonia", "Finland", "Roumania")) + theme_light() +
+  theme(axis.text.x = element_text(angle=38))
+
 
 ```
 
@@ -303,9 +329,8 @@ PC_Act %>%
   geom_line(aes(x=time,y=PC_act,colour=sex,group=sex),size=0.5) + labs(title="Evolution of Activity   Rate between wooman & men ") + xlab("time") + ylab("activity rate")+ ylim(40,90)
 
 
-# Data of women activity rate in 2018
+# Data of gap activity rate in 2018
 
-#test gap
 PC_ActGapTime=PC_ActGap
 PC_ActGap=PC_ActGap %>% 
   filter(! country %in% c("EA17","EA18","EA19","EU15","EU28"))%>% 
@@ -351,13 +376,23 @@ gap2018EU%>%filter(gap==max2018UE)%>%select(CNTR_CODE)
 gapmoy=median(gap2018EU$gap) #9.5
 gap2018EU%>% filter(gap==gapmoy)%>%select(CNTR_CODE) # BE,Belgium
 
+# graph of the evolution of 3 country over time for gap activity rate
+PC_ActGapTime %>% 
+  filter(country %in%c("IT","BE","LT")) %>% group_by(country)%>% ggplot(.,) +
+  geom_line(aes(x=time,y=gap,colour=country,group=country),size=1) +
+  labs(title="Evolution of gap activity rate over time  ") + xlab("time") +
+  ylab("gap paid") +
+  scale_color_discrete(label= c("Belgium"," Italy", "Lituania")) + theme_light() +
+  theme(axis.text.x = element_text(angle=38))
+
+```
 # graph of the evolution of Belgium gap of activity rate 
 
 PC_ActGapTime %>% 
   filter(country=="BE") %>% select(time,gap)%>% ggplot() + geom_line(aes(x=time,y=gap,group=1))+ labs(title="Evolution of Activity gap between woman & men in Belgium") + xlab("time") + ylab("gap of activity rate")
 
 
-# graph of the evolution of taly  gap of activity rate 
+# graph of the evolution of Italy  gap of activity rate 
 PC_ActGapTime %>% 
   filter(country=="IT") %>% select(time,gap)%>%
   ggplot()+ geom_line(aes(x=time,y=gap,group=1),size=0.5) + labs(title="Evolution of Activity gap between wooman & men in Italy") + xlab("time") + ylab("activity rate")
@@ -367,9 +402,13 @@ PC_ActGapTime %>%
   filter(country=="LT") %>% select(time,gap)%>%
   ggplot()+ geom_line(aes(x=time,y=gap,group=1),size=0.5) + labs(title="Evolution of Activity gap between wooman & men in Lituania") + xlab("time") + ylab("activity rate")
 
+# graph of the evolution of Turquey gap of activity rate 
+PC_ActGapTime %>% 
+  filter(country=="TR") %>% select(time,gap)%>%
+  ggplot()+ geom_line(aes(x=time,y=gap,group=1),size=0.5) + labs(title="Evolution of Activity gap between wooman & men in Turquey") + xlab("time") + ylab("activity rate")
 
 
-```
+
 
 
 
@@ -395,6 +434,81 @@ ggplot(PC_UnempUE) +
 
 
 ```
+
+```{r}
+
+# emploi precaire PC_part time
+
+# cartographie Total
+
+
+PC_Partimecarte=PC_Partime %>% 
+  filter(! country %in% c("EA17","EA18","EA19","EU15","EU28")) %>%
+  filter(sex=="T",time=="2018")
+
+PC_Partimecarte$class = cut_to_classes(PC_Partimecarte$PC_parttime_onemp, n=5,
+                                       style="equal", decimals=1)
+
+geocart <- get_eurostat_geospatial(resolution = "60", output_class = "df")
+geocart <- geocart %>% 
+  rename(country =CNTR_CODE)
+ 
+mapdatapartime <- PC_Partimecarte%>%
+  inner_join(geocart, by = "country")
+
+ggplot(mapdatapartime, aes(x = long, y = lat, group = group))+
+  geom_polygon(aes(fill=class), color="grey", size = .1)+ 
+  scale_fill_brewer(palette ="Set2") +
+  labs(title="Precarity employment throughout Europe, 2017",
+             fill="Part time employment") + theme_light()+
+  coord_map(xlim=c(-40,40), ylim=c(25,73))
+
+# Gap H - F
+
+TabF=PC_Partime %>% filter(sex=="F") %>% rename(PC_PF= PC_parttime_onemp)%>% select(-"sex")
+TabH=PC_Partime %>% filter(sex=="M") %>% rename(PC_PH= PC_parttime_onemp)%>% select(-"sex")
+PartTime=left_join(TabF,TabH,by=c('country','time'))
+PartTime$gap=PartTime$PC_PF-PartTime$PC_PH
+
+# choose 3 country
+PartTime2018=PartTime%>% filter(time=="2018")%>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28","ME","MK","TR")) 
+
+# negative for Montenegro so Men are more precare than woman
+# Country with the lowest precarity gap
+
+minpt2018=min(PartTime2018$gap)# 0.1 
+mincountrypt2018=PartTime2018%>%filter(gap==minpt2018)%>%select(country)
+mincountrypt2018 # BG, Bulgaria # 0.4
+
+# Country with the higher precarity  gap
+maxpt2018=max(PartTime2018$gap)# 58.3
+maxcountrypt2018=PartTime2018%>%filter(gap==maxpt2018)%>%select(country)
+maxcountrypt2018 #NL Netherland 
+
+# Country with the median gender paid gap
+#medpt2018=median(PartTime2018$gap) #20.3 
+#medcountpt=PartTime2018 %>% filter(gap==20.3)%>%select(country)
+# medcountpt # Norway
+
+# European gender paid gap
+EUpt=PartTime%>%filter(country=="EU28",time=="2018")%>%select(gap)
+EUpt# 22.8
+
+# graph of the evolution of 3 country over time forpart time activity rate
+PartTime %>% 
+  filter(country %in%c("NO","BG","NL")) %>% group_by(country)%>% ggplot(.,) +
+  geom_line(aes(x=time,y=gap,colour=country,group=country),size=1) +
+  labs(title="Evolution of par ime gap activity rate over time  ") + xlab("time") +
+  ylab("gap paid") +
+  scale_color_discrete(label= c("Netherland","Norway", " Bulgaria")) + theme_light() +
+  theme(axis.text.x = element_text(angle=38))
+
+# correlation 
+
+
+
+```
+
 
 
 
