@@ -1,10 +1,10 @@
 ---
-title: "Gender equality in labour market doc"
-author: "moi"
-date: "27/10/2019"
-output:
-  word_document: default
-  html_document: default
+title: "Data Science Project" 
+author: "Manueal Zonon, Lucie Aracil, Gwendoline Viquesnel"
+date: '`r format(Sys.Date(), "%B %d, %Y")`' # generate date automatically
+output: 
+  html_document:
+   code_folding : "hide" # hide the code 
 ---
 
 ```{r, include=FALSE}
@@ -23,9 +23,7 @@ library(survival)
 library(mapproj)
 library(mosaic)
 library(scales)
-```
 
-```{r}
 # Downloading and naming the data frame from eurostat
 doc1 <- get_eurostat(id= "lfsi_emp_a", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc2 <- get_eurostat(id= "lfsa_ergaed", time_format = "date", filters = "none", type = "code", cache = TRUE)
@@ -37,9 +35,7 @@ doc7<- get_eurostat(id= "demo_gind", time_format = "date", filters = "none", typ
 doc8<- get_eurostat(id= "nama_10_gdp", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc9<- get_eurostat(id= "earn_gr_gpgr2", time_format = "date", filters = "none",
 type = "code", cache = TRUE)   
-```
 
-```{r}
 # Check if there are missing values
 any(is.na(doc1))
 any(is.na(doc2))
@@ -50,9 +46,7 @@ any(is.na(doc6))
 any(is.na(doc7))
 any(is.na(doc8))
 any(is.na(doc9))
-```
 
-```{r}
 # Remove NA
 doc2=na.omit(doc2)
 doc3=na.omit(doc3)
@@ -61,9 +55,7 @@ doc6=na.omit(doc6)
 doc7=na.omit(doc7)
 doc8=na.omit(doc8)
 doc9=na.omit(doc9)
-```
 
-```{r}
 # Check if the missing value are gone
 sum(is.na(doc2)) 
 sum(is.na(doc3)) 
@@ -72,10 +64,7 @@ sum(is.na(doc6))
 sum(is.na(doc7)) 
 sum(is.na(doc8)) 
 sum(is.na(doc9)) 
-```
 
-
-```{r}
 # date format
 doc1$time <- format(doc1$time, "%Y")
 doc2$time <- format(doc2$time, "%Y")
@@ -85,16 +74,12 @@ doc5$time <- format(doc5$time, "%Y")
 doc6$time <- format(doc6$time, "%Y")
 doc7$time <- format(doc7$time, "%Y")
 doc9$time <- format(doc9$time, "%Y")
-```
 
-```{r}
 # only the doc8 is not as date so we change it in date format before
 class(doc8$time)
 doc8$time=as.Date(doc8$time,"%Y-%m-%d")
 doc8$time <- format(doc8$time,"%Y")
-```
 
-```{r}
 # filter to keep data from 2006 
 doc1=doc1 %>% filter(time>=2006)
 doc2=doc2 %>% filter(time>=2006)
@@ -128,9 +113,7 @@ doc1=doc1%>% select(-"unit")
 doc2=doc2%>% select(-"unit") # il n'y a que PC
 doc3=doc3%>% select(-"unit")
 doc9=doc9%>% select(-"unit")
-```
 
-```{r}
 # Rename columns, rename labels inside columns, suppress useless stuffs and rename documents
 
               ### Reminder supprimer total partout car ils dérangent quand on fait les graphiques et ils                          peuvent être calculé en additionnant H + F 
@@ -204,6 +187,13 @@ PC_Gapaid2 <- PC_Gapaid %>%
 
 ```
 
+## Comparative study of the state of gender equality in the labour market between European countries
+
+### Intro 
+
+### Partie 1: Activity rate evolution and difference 
+
+#### Evolution of activity rate in Europe from 2006 to 2018: Man VS. Woman
 
 ```{r,Activity Rate a}
 
@@ -216,6 +206,14 @@ PC_Act %>%
   xlab("time") + ylab("activity rate")+ ylim(40,90)+
   theme(axis.text.x = element_text(angle=38))
 ```
+
+The activity rate increase between 2006 and 2018 for both women and men overall. 
+Generally, women always have an activity rate lower than the men. 
+We can notice that 2011 is a turning point: Before 2011, the activity rate for men was stagnating around 83% while activity rate for women was increasing. After 2011, the activity rate for men start to slightly increase to reach (calcul EUR28 men activity rate 2018) in 2018. Concerning, women activity rate after 2011, it keep increasing a bit faster than before 2011: Indeed, The Beta of the trend before 2011 was (calcul Beta slope EUR28 women avant 2011) while the Beta after 2011 was (calcul Beta slope EUR28 avant 2011).  Women activity rate finally reach (calcul EUR28 women activity rate 2018) in 2018. 
+Despite, a positive evolution of the activity rate for women for the concerned period, the gap between men and women activity rate remain almost unchanged. In 2006, the difference in percentage between men and women activity rate was (calcul gap activity rate EUR28 in 2006 between men and women) while in 2018 this gap in percentage was (calcul gap activity rate EUR28 in 2018 between men and women). 
+
+#### Gap activity rate 2018 in Europe
+
 ```{r,Activity rate b}
 ###### I b) Cartograme, Gap Activity Rate Zone UE
 
@@ -251,6 +249,13 @@ ggplot(data=map_data) + geom_sf(aes(fill=class),color="dim grey",size=0.1)+
     coord_sf(xlim=c(-40,44), ylim=c(25,70))
 
 ```
+
+Countries in red are those with the lowest gap of activity rate between woman and men. On the map above, we can see that the countries with the lowest gap of activity rate are mostly countries from the north of Europe : The scandinavian peninsula countries (Norway, Finland, Sweden, Denmark and Iceland), two other countries from the baltic region (Latvia and Lithuania) plus Portugal and Romania. The results concerning the Scandinavian countries are consistent with the expectations because scandinavian countries are known to be equalitarian on gender matter. However, it is a little more surprising for the other countries. Even more surprising the country with the lowest activity rate gap is ...(mettre code pour Romania) with … (mettre code pour %).  
+
+The countries with the higher gap of activity rate are depicted in dark and light blue. The one with the higher gender gap is … (mettre code pour Turkey) with … (mettre code pour %). This is consistent because Turkey is a country where the major religion is Islam and usually islamic woman are not allowed to work (with some exceptions). But we will not used Turkey for further analysis because it is not within the European Union. The higher gender gap within european countries can be found in .... (mettre code pour Italia) with … (mettre code pour %) (société machiste ???). 
+
+#### Correlation between the activity rate and the activity rate gap in 2006, 2010 and 2018 for all European countries
+
 ```{r,Activity rate c}
 
 ##### I c) Corrélation taux d'activité total & Gap taux d'activité in 2006-2010-2018
@@ -297,6 +302,9 @@ PC_Act_Gap %>%
   select(time, country, values, gap)
 ### No outliers, why ???
 ```
+
+### Correlation between the activity rate gap and the GDP in 2006, 2010 and 2018 for all European countries
+
 ```{r, Activity rate d}
 
 ##### I d)Corrélation Gap activity rate and GDP in 2018
@@ -356,7 +364,7 @@ PC_ActGapTime %>%
   geom_line(aes(x=time,y=gap,colour=country,group=country),size=1) +
   labs(title="Evolution of gap activity rate over time  ") + xlab("time") +
   ylab("gap paid") +
-  scale_color_discrete(label= c("Belgium"," Italy", "Lituania")) + theme_light() +
+  scale_color_discrete(label= c("Belgium"," Italy", "Lithuania")) + theme_light() +
   theme(axis.text.x = element_text(angle=38))
 
 ```
@@ -399,7 +407,7 @@ ggplot(mapdatapartime, aes(x = long, y = lat, group = group))+
   geom_polygon(aes(fill=class), color="grey", size = .1)+ 
   scale_fill_brewer(palette ="Set2") +
   labs(title="Precarity employment throughout Europe, 2017",
-             fill="Part time employment") + theme_light()+
+             fill="Part-time employment") + theme_light()+
   coord_map(xlim=c(-40,40), ylim=c(25,73))
 ```
 ```{r, Parttime b}
@@ -446,7 +454,6 @@ PartTime %>%
   theme(axis.text.x = element_text(angle=38))
 
 # correlation 
-
 ```
 
 
@@ -463,7 +470,7 @@ NowantF%>%filter(values==maxnowant) # Slovénie 46.5%
 ```
 
 
-```{r Gap Paid }
+```{r, Gap Paid }
 
 #### VI a)graph of the evolution og Gap paid in Europe 
 PC_Gapaid2 %>% 
@@ -499,7 +506,7 @@ ggplot(mapdata, aes(x = long, y = lat, group = group))+
        fill="Gap paid (%)") + theme_light()+
   coord_map(xlim=c(-40,40), ylim=c(25,73))
 ```
-```{r, Gap Paid}
+```{r, Gap Paidb}
 
 # filter PC_Gapaid2 for work on max min medium
 PC_Gapaid22017=PC_Gapaid2%>% filter(time=="2017")
