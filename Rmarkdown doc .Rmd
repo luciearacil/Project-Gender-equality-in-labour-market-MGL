@@ -206,10 +206,9 @@ PC_Act %>%
   xlab("time") + ylab("activity rate")+ ylim(40,90)+
   theme(axis.text.x = element_text(angle=38))
 ```
-
 The activity rate increase between 2006 and 2018 for both women and men overall. 
 Generally, women always have an activity rate lower than the men. 
-We can notice that 2011 is a turning point: Before 2011, the activity rate for men was stagnating around 83% while activity rate for women was increasing. After 2011, the activity rate for men start to slightly increase to reach (calcul EUR28 men activity rate 2018) in 2018. Concerning, women activity rate after 2011, it keep increasing a bit faster than before 2011: Indeed, The Beta of the trend before 2011 was (calcul Beta slope EUR28 women avant 2011) while the Beta after 2011 was (calcul Beta slope EUR28 avant 2011).  Women activity rate finally reach (calcul EUR28 women activity rate 2018) in 2018. 
+We can notice that 2011 is a turning point: Before 2011, the activity rate for men was stagnating around 83% while activity rate for women was increasing. After 2011, the activity rate for men start to slightly increase to reach 'r  '(calcul EUR28 men activity rate 2018) in 2018. Concerning, women activity rate after 2011, it keep increasing a bit faster than before 2011: Indeed, The Beta of the trend before 2011 was (calcul Beta slope EUR28 women avant 2011) while the Beta after 2011 was (calcul Beta slope EUR28 avant 2011).  Women activity rate finally reach (calcul EUR28 women activity rate 2018) in 2018. 
 Despite, a positive evolution of the activity rate for women for the concerned period, the gap between men and women activity rate remain almost unchanged. In 2006, the difference in percentage between men and women activity rate was (calcul gap activity rate EUR28 in 2006 between men and women) while in 2018 this gap in percentage was (calcul gap activity rate EUR28 in 2018 between men and women). 
 
 #### Gap activity rate 2018 in Europe
@@ -505,6 +504,7 @@ ggplot(mapdata, aes(x = long, y = lat, group = group))+
        subtitle="Avg. gap paid per country",
        fill="Gap paid (%)") + theme_light()+
   coord_map(xlim=c(-40,40), ylim=c(25,73))
+
 ```
 ```{r, Gap Paidb}
 
@@ -539,7 +539,7 @@ PC_Gapaid2 %>%
   labs(title="Evolution of gap paid over time  ") + xlab("time") + ylab("gap paid") +
   scale_color_discrete(label= c(" Estonia", "Finland", "Roumania")) + theme_light() +
   theme(axis.text.x = element_text(angle=38))
-
+```
 
 ```
 
