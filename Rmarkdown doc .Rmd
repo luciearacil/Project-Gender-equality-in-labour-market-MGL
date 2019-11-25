@@ -304,45 +304,7 @@ PC_Act_Gap %>%
   select(time, country, values, gap)
 ### No outliers, why ???
 
-### faire correlogram animée pour toutes les années 
 
-### first attempt : gganimate
-
-library(gganimate)
-library(gifski)
-library(av)
-library(magick)
-
-PC_Act_Gapbis=PC_Act_Gap %>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28")) 
-
-gganimate_1 <- ggplot(data = PC_Act_Gapbis, aes(x=values, y=gap, color=country)) +
-  geom_point(alpha = 0.5) +
-  labs(x = "Total activity rate", y = "Activity gap between men and women") +
-  transition_states(time, 3, 1) + 
-  ease_aes('cubic-in-out')
-
-gganimate_1
-
-### second attempt
-
-library(plotly)
-
-p <- PC_Act_Gapbis %>%
-  plot_ly(
-    x = ~values, 
-    y = ~gap, 
-    color = ~country, 
-    frame = ~time, 
-    text = ~country, 
-    hoverinfo = "text",
-    type = 'scatter',
-    mode = 'markers'
-  ) %>%
-  layout(
-    xaxis = list(
-      type = "log"
-    )
-  )
 ```
 
 ### Correlation between the activity rate gap and the GDP in 2006, 2010 and 2018 for all European countries
