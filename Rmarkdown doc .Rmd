@@ -23,6 +23,8 @@ library(survival)
 library(mapproj)
 library(mosaic)
 library(scales)
+library(grid)
+library(ggrepel)
 
 # Downloading and naming the data frame from eurostat
 doc1 <- get_eurostat(id= "lfsi_emp_a", time_format = "date", filters = "none", type = "code", cache = TRUE)
@@ -199,12 +201,29 @@ PC_Gapaid2 <- PC_Gapaid %>%
 
 ###### I a) Evolution of activity rate in UE of 28, between woman & man
 
+# Activity rate of European woman in 
+# a data frame with all the annotation info
+
+ARF06=PC_Act %>% filter(country =="EU28",sex=="F",time=="2006")%>% select(PC_act)
+ARF18=PC_Act %>% filter(country =="EU28",sex=="F",time=="2018")%>% select(PC_act)
+ARM06=PC_Act %>% filter(country =="EU28",sex=="M",time=="2006")%>% select(PC_act)
+ARM18=PC_Act %>% filter(country =="EU28",sex=="M",time=="2018")%>% select(PC_act)
+
+# Create a text
+grobF <- grobTree(textGrob(c(ARF06,ARF18), x=c(0.01,0.9) , y=c(0.45,0.5), hjust=0,
+  gp=gpar(col="red", fontsize=10)))
+grobM <- grobTree(textGrob(c(ARM06,ARM18), x=c(0.01,0.9) , y=c(0.9,0.95), hjust=0,
+  gp=gpar(col="Blue", fontsize=10)))
+
 PC_Act %>% 
   filter(country =="EU28") %>% group_by(sex)%>% ggplot(.,) +
   geom_line(aes(x=time,y=PC_act,colour=sex,group=sex),size=1) +  
   labs(title="Evolution of Activity   Rate between woman & men ") +
   xlab("time") + ylab("activity rate")+ ylim(40,90)+
-  theme(axis.text.x = element_text(angle=38))
+  theme(axis.text.x = element_text(angle=38)) +
+  annotation_custom(grobM)+annotation_custom(grobF)
+
+
 ```
 The activity rate increase between 2006 and 2018 for both women and men overall. 
 Generally, women always have an activity rate lower than the men. 
@@ -357,6 +376,18 @@ gap2018EU%>%filter(gap==max2018UE)%>%select(CNTR_CODE)
 gapmoy=median(gap2018EU$gap) #9.5
 gap2018EU%>% filter(gap==gapmoy)%>%select(CNTR_CODE) # BE,Belgium
 
+# text for plot
+li06=PC_ActGapTime%>%filter(time==2006,country=='LT')%>%select(gap)
+li06=round(li06,2)
+Lit <- grobTree(textGrob(c(li06,mingap2018), x=c(0.01,0.9) , y=c(0.2,0.12), hjust=0,
+  gp=gpar(col="Blue", fontsize=10)))
+it06=PC_ActGapTime%>%filter(time==2006,country=='IT')%>%select(gap)
+Ita <- grobTree(textGrob(c(it06,max2018UE), x=c(0.01,0.9) , y=c(0.9,0.7), hjust=0,
+  gp=gpar(col="Green", fontsize=10)))
+be06=PC_ActGapTime%>%filter(time==2006,country=='BE')%>%select(gap)
+Bel<- grobTree(textGrob(c(be06,gapmoy), x=c(0.01,0.9) , y=c(0.6,0.38), hjust=0,
+  gp=gpar(col="Red", fontsize=10)))
+
 # graph of the evolution of 3 country over time for gap activity rate
 PC_ActGapTime %>% 
   filter(country %in%c("IT","BE","LT")) %>% group_by(country)%>% ggplot(.,) +
@@ -364,7 +395,8 @@ PC_ActGapTime %>%
   labs(title="Evolution of gap activity rate over time  ") + xlab("time") +
   ylab("gap paid") +
   scale_color_discrete(label= c("Belgium"," Italy", "Lithuania")) + theme_light() +
-  theme(axis.text.x = element_text(angle=38))
+  theme(axis.text.x = element_text(angle=38))+ annotation_custom(Bel)+annotation_custom(Bel)+annotation_custom(Ita)+annotation_custom(Lit)
+
 
 ```
 
