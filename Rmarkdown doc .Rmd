@@ -1,7 +1,7 @@
 ---
 title: "Data Science Project" 
 author: "Manueal Zonon, Lucie Aracil, Gwendoline Viquesnel"
-date: '`r format(Sys.Date(), "%B %d, %Y")`' # generate date automatically
+date: '`r format(Sys.Date(), "%d %B, %Y")`' # generate date automatically
 output: 
   html_document:
    code_folding : "hide" # hide the code 
@@ -247,6 +247,8 @@ ggplot(data=map_data) + geom_sf(aes(fill=class),color="dim grey",size=0.1)+
     theme_light()  +
     coord_sf(xlim=c(-40,44), ylim=c(25,70))
 
+### voir si on peux faire cartogram animée avec toute les années et pays change de couleur en fonction de l'évolution
+
 ```
 
 Countries in red are those with the lowest gap of activity rate between woman and men. On the map above, we can see that the countries with the lowest gap of activity rate are mostly countries from the north of Europe : The scandinavian peninsula countries (Norway, Finland, Sweden, Denmark and Iceland), two other countries from the baltic region (Latvia and Lithuania) plus Portugal and Romania. The results concerning the Scandinavian countries are consistent with the expectations because scandinavian countries are known to be equalitarian on gender matter. However, it is a little more surprising for the other countries. Even more surprising the country with the lowest activity rate gap is ...(mettre code pour Romania) with … (mettre code pour %).  
@@ -264,13 +266,14 @@ PC_Act_Gap_col1 <- doc1 %>% filter(sex=="T") %>% filter(category=="Actif") %>%se
 PC_Act_Gap_col2=PC_ActGapTime %>% select(gap, time, country)
 PC_Act_Gap=inner_join(PC_Act_Gap_col1, PC_Act_Gap_col2, by=c('time','country'))
 
-PC_Act_Gap=PC_Act_Gap %>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28")) %>%
+PC_Act_Gapp=PC_Act_Gap %>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28")) %>%
   filter(time == c("2006", "2010", "2018"))
 
 ggplot(data = PC_Act_Gap, aes(x=values, y=gap, color=country)) +
   geom_point() +
   geom_smooth(method = "lm", se=FALSE) + 
   facet_wrap(~time) 
+
 ## tendance général : plus le taux d'activité est haut et plus l'écart entre taux d'activité H et F est faible
 #################### AJOUTER LEGENDES ET CHANGER NOM DES AXES
 
@@ -300,6 +303,46 @@ PC_Act_Gap %>%
   filter(gap>30) %>%
   select(time, country, values, gap)
 ### No outliers, why ???
+
+### faire correlogram animée pour toutes les années 
+
+### first attempt : gganimate
+
+library(gganimate)
+library(gifski)
+library(av)
+library(magick)
+
+PC_Act_Gapbis=PC_Act_Gap %>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28")) 
+
+gganimate_1 <- ggplot(data = PC_Act_Gapbis, aes(x=values, y=gap, color=country)) +
+  geom_point(alpha = 0.5) +
+  labs(x = "Total activity rate", y = "Activity gap between men and women") +
+  transition_states(time, 3, 1) + 
+  ease_aes('cubic-in-out')
+
+gganimate_1
+
+### second attempt
+
+library(plotly)
+
+p <- PC_Act_Gapbis %>%
+  plot_ly(
+    x = ~values, 
+    y = ~gap, 
+    color = ~country, 
+    frame = ~time, 
+    text = ~country, 
+    hoverinfo = "text",
+    type = 'scatter',
+    mode = 'markers'
+  ) %>%
+  layout(
+    xaxis = list(
+      type = "log"
+    )
+  )
 ```
 
 ### Correlation between the activity rate gap and the GDP in 2006, 2010 and 2018 for all European countries
@@ -333,6 +376,8 @@ ggplot(data = PC_GDP_Gap, aes(x=values, y=gap, color=country)) +
 ## Calculer coef de correlation 
 cor(PC_GDP_Gap$values, PC_GDP_Gap$gap, method="pearson")
 ## 0,26 = faiblement corrélé positivement 
+
+### faire correlogram animée pour toutes les années 
 ```
 ```{r, Activity rate e}
 
@@ -408,6 +453,8 @@ ggplot(mapdatapartime, aes(x = long, y = lat, group = group))+
   labs(title="Precarity employment throughout Europe, 2017",
              fill="Part-time employment") + theme_light()+
   coord_map(xlim=c(-40,40), ylim=c(25,73))
+
+### faire cartogram animée pour toutes les années 
 ```
 ```{r, Parttime b}
 
@@ -505,6 +552,8 @@ ggplot(mapdata, aes(x = long, y = lat, group = group))+
        fill="Gap paid (%)") + theme_light()+
   coord_map(xlim=c(-40,40), ylim=c(25,73))
 
+### faire cartogram animée pour toutes les années 
+
 ```
 ```{r, Gap Paidb}
 
@@ -540,7 +589,4 @@ PC_Gapaid2 %>%
   scale_color_discrete(label= c(" Estonia", "Finland", "Roumania")) + theme_light() +
   theme(axis.text.x = element_text(angle=38))
 ```
-
-```
-
 
