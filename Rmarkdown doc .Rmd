@@ -1,10 +1,11 @@
 ---
 title: "Data Science Project" 
 author: "Manueal Zonon, Lucie Aracil, Gwendoline Viquesnel"
-date: '`r format(Sys.Date(), "%d %B, %Y")`' # generate date automatically
+date: '`r format(Sys.Date(), "%d %B, %Y")`' # generate date automatically (voir si on peux mettre 25 novembre au lieu de novembre 25)
 output: 
   html_document:
    code_folding : "hide" # hide the code 
+   toc : true #table of content
 ---
 
 ```{r, include=FALSE}
@@ -193,6 +194,8 @@ PC_Gapaid2 <- PC_Gapaid %>%
 
 ### Intro 
 
+A ECRIRE
+
 ### Partie 1: Activity rate evolution and difference 
 
 #### Evolution of activity rate in Europe from 2006 to 2018: Man VS. Woman
@@ -223,16 +226,42 @@ PC_Act %>%
   theme(axis.text.x = element_text(angle=38)) +
   annotation_custom(grobM)+annotation_custom(grobF)
 
+### RENOMMER les axes
 
+# Code à mettre dans le paragraphe
+
+EUR28_men_activityrate_2018 <- PC_Act[57,5]
+print(EUR28_men_activityrate_2018)
+EUR28_wom_activityrate_2018 <- PC_Act[16,5]
+print(EUR28_wom_activityrate_2018)
+
+betaslope_wom<- PC_Act %>% filter(time <= 2011, sex%in%c("F"), country=="EU28")
+betaslope1 <- lm(formula=betaslope_wom$time~betaslope_wom$PC_act,data=betaslope_wom)
+print(betaslope1)
+
+betaslope_tot <- PC_Act%>% filter(time<=2011, country=="EU28")
+betaslope2 <- lm(formula=betaslope_tot$PC_act~betaslope_tot$time, data=betaslope_tot)
+print(betaslope2)
+
+activityrate_m2006 <- PC_Act[994,5]
+activityrate_w2006 <- PC_Act[956,5]
+gap_activityrate_2006 <- activityrate_m2006 - activityrate_w2006
+
+activityrate_m2018 <- PC_Act[57,5]
+activityrate_w2018 <- PC_Act[16,5]
+gap_activityrate_2018 <- activityrate_m2018 - activityrate_w2018
 ```
-The activity rate increase between 2006 and 2018 for both women and men overall. 
-Generally, women always have an activity rate lower than the men. 
-We can notice that 2011 is a turning point: Before 2011, the activity rate for men was stagnating around 83% while activity rate for women was increasing. After 2011, the activity rate for men start to slightly increase to reach 'r  '(calcul EUR28 men activity rate 2018) in 2018. Concerning, women activity rate after 2011, it keep increasing a bit faster than before 2011: Indeed, The Beta of the trend before 2011 was (calcul Beta slope EUR28 women avant 2011) while the Beta after 2011 was (calcul Beta slope EUR28 avant 2011).  Women activity rate finally reach (calcul EUR28 women activity rate 2018) in 2018. 
-Despite, a positive evolution of the activity rate for women for the concerned period, the gap between men and women activity rate remain almost unchanged. In 2006, the difference in percentage between men and women activity rate was (calcul gap activity rate EUR28 in 2006 between men and women) while in 2018 this gap in percentage was (calcul gap activity rate EUR28 in 2018 between men and women). 
+
+<p style="text-align:justify;"> The activity rate increase between 2006 and 2018 for both women and men overall. Generally, women always have an activity rate lower than the men. 
+We can notice that 2011 is a turning point: Before 2011, the activity rate for men was stagnating around 83% while activity rate for women was increasing. After 2011, the activity rate for men start to slightly increase to reach 'r EUR28_men_activityrate_2018' in 2018. Concerning, women activity rate after 2011, it keep increasing a bit faster than before 2011: Indeed, The Beta of the trend before 2011 was 'r betaslope1' while the Beta after 2011 was betaslope2.  Women activity rate finally reach 'r EUR28_wom_activityrate_2018' in 2018. 
+Despite, a positive evolution of the activity rate for women for the concerned period, the gap between men and women activity rate remain almost unchanged. In 2006, the difference in percentage between men and women activity rate was 'r gap_activityrate_2006' while in 2018 this gap in percentage was 'r gap_activityrate_2018'. </p> ### code pour justifier texte
 
 #### Gap activity rate 2018 in Europe
 
 ```{r,Activity rate b}
+
+### CACHER MESSAGE ET WARNING
+
 ###### I b) Cartograme, Gap Activity Rate Zone UE
 
 # Data pour gap activity rate
@@ -278,27 +307,37 @@ The countries with the higher gap of activity rate are depicted in dark and ligh
 
 ```{r,Activity rate c}
 
+### CACHER MESSAGE ET WARNING
+
 ##### I c) Corrélation taux d'activité total & Gap taux d'activité in 2006-2010-2018
 
-## Graphique
-PC_Act_Gap_col1 <- doc1 %>% filter(sex=="T") %>% filter(category=="Actif") %>%select(values, time, country)
-PC_Act_Gap_col2=PC_ActGapTime %>% select(gap, time, country)
-PC_Act_Gap=inner_join(PC_Act_Gap_col1, PC_Act_Gap_col2, by=c('time','country'))
+## Graphique animate
 
-PC_Act_Gapp=PC_Act_Gap %>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28")) %>%
-  filter(time == c("2006", "2010", "2018"))
+### first attempt : gganimate
 
-ggplot(data = PC_Act_Gap, aes(x=values, y=gap, color=country)) +
-  geom_point() +
-  geom_smooth(method = "lm", se=FALSE) + 
-  facet_wrap(~time) 
+library(gganimate)
+library(gifski)
+library(av)
+library(magick)
+
+PC_Act_Gapbis=PC_Act_Gap %>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28")) 
+
+gganimate_1 <- ggplot(data = PC_Act_Gapbis, aes(x=values, y=gap, color=country)) +
+  geom_point(alpha = 0.5) +
+  labs(x = "Total activity rate", y = "Activity gap between men and women") +
+  transition_states(time, 3, 1) + 
+  ease_aes('cubic-in-out')
+
+gganimate_1
+
+### AJOUTER LES ANNEES EN FOND
 
 ## tendance général : plus le taux d'activité est haut et plus l'écart entre taux d'activité H et F est faible
 #################### AJOUTER LEGENDES ET CHANGER NOM DES AXES
 
 ## Calculer coef de correlation 
 cor(PC_Act_Gap$values, PC_Act_Gap$gap, method="pearson")
-## -0,85 = fortement corrélé négativement (variable évolue sens inverse de l'autre)
+## -0,85 = fortement corrélé négativement (variable évolue sens inverse de l'autre) ET CACHER RESULTAT MAIS L'AJOUTER DANS UNE PHRASE
 
 ## Outliers to identify (hors trend)
 
@@ -315,6 +354,7 @@ PC_Act_Gap %>%
   filter(gap>30) %>%
   select(time, country, values, gap)
 ### MT, TR
+### CACHER RESULTAT MAIS L'AJOUTER DANS UNE PHRASE
 
 ### Outliers 2018
 PC_Act_Gap %>%
@@ -322,18 +362,16 @@ PC_Act_Gap %>%
   filter(gap>30) %>%
   select(time, country, values, gap)
 ### No outliers, why ???
-
-
 ```
 
-### Correlation between the activity rate gap and the GDP in 2006, 2010 and 2018 for all European countries
+#### Correlation between the activity rate gap and the GDP in 2006, 2010 and 2018 for all European countries
 
 ```{r, Activity rate d}
 
 ##### I d)Corrélation Gap activity rate and GDP in 2018
 
 ## Calculer coef de correlation 
-cor(PC_Act_Gap$values, PC_Act_Gap$gap, method="pearson")
+cor(PC_Act_Gap$values, PC_Act_Gap$gap, method="pearson") ## CACHER CALCUL
 
 ## Vérification graphique
 PC_GDP_Gap_col1 <- GDPandVA %>% 
@@ -418,6 +456,7 @@ ggplot(PC_UnempUE) +
    geom_line(aes(x=time,y=PC_unemp,group=sex,colour=sex),size=0.5) + labs(title="Evolution of Unemployent Rate between wooman & men ") + xlab("time") + ylab("Unemployment rate")+ ylim(5,15)+theme(axis.text.x = element_text(angle=45))+geom_vline(xintercept = 9,
                 color = "purple", size=1.5) + theme_classic()+theme(axis.text.x = element_text(angle=38))
 
+### BIG ERROR MESSAGE
 ```
 
 
@@ -533,6 +572,8 @@ type = "code", cache = TRUE) %>%
   mutate(cat = cut_to_classes(mean_gappaid_percountry, n=7, decimals=1))
  
 geocart <- get_eurostat_geospatial(resolution = "60", output_class = "df")
+
+### BIG WARNING MESSAGE
  
 mapdata <- datacart %>%
   inner_join(geocart, by = "geo")
