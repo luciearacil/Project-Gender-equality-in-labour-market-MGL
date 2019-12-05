@@ -36,8 +36,7 @@ doc5 <- get_eurostat(id= "une_rt_a", time_format = "date", filters = "none", typ
 doc6 <- get_eurostat(id= "une_ltu_a", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc7<- get_eurostat(id= "demo_gind", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc8<- get_eurostat(id= "nama_10_gdp", time_format = "date", filters = "none", type = "code", cache = TRUE)
-doc9<- get_eurostat(id= "earn_gr_gpgr2", time_format = "date", filters = "none",
-type = "code", cache = TRUE)   
+doc9<- get_eurostat(id= "earn_gr_gpgr2", time_format = "date", filters = "none", type = "code", cache = TRUE)   
 
 # Check if there are missing values
 any(is.na(doc1))
@@ -200,7 +199,7 @@ A ECRIRE
 
 #### Evolution of activity rate in Europe from 2006 to 2018: Man VS. Woman
 
-```{r,Activity Rate a}
+```{r, message=FALSE, warning=FALSE}
 
 ###### I a) Evolution of activity rate in UE of 28, between woman & man
 
@@ -258,7 +257,7 @@ Despite, a positive evolution of the activity rate for women for the concerned p
 
 #### Gap activity rate 2018 in Europe
 
-```{r,Activity rate b}
+```{r, message=FALSE, warning=FALSE}
 
 ### CACHER MESSAGE ET WARNING
 
@@ -305,11 +304,16 @@ The countries with the higher gap of activity rate are depicted in dark and ligh
 
 #### Correlation between the activity rate and the activity rate gap in 2006, 2010 and 2018 for all European countries
 
-```{r,Activity rate c}
-
-### CACHER MESSAGE ET WARNING
+```{r, message=FALSE, warning=FALSE}
 
 ##### I c) Corrélation taux d'activité total & Gap taux d'activité in 2006-2010-2018
+
+PC_Act_Gap_col1=doc1 %>% filter(sex=="T") %>% filter(category=="Actif") %>%select(values, time, country)
+PC_Act_Gap_col2=PC_ActGapTime %>% select(gap, time, country)
+PC_Act_Gap=inner_join(PC_Act_Gap_col1, PC_Act_Gap_col2, by=c('time','country'))
+
+PC_Act_Gap=PC_Act_Gap %>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28")) %>%
+  filter(time == c("2006", "2010", "2018"))
 
 ## Graphique animate
 
@@ -366,7 +370,7 @@ PC_Act_Gap %>%
 
 #### Correlation between the activity rate gap and the GDP in 2006, 2010 and 2018 for all European countries
 
-```{r, Activity rate d}
+```{r, message=FALSE, warning=FALSE}
 
 ##### I d)Corrélation Gap activity rate and GDP in 2018
 
@@ -447,7 +451,7 @@ PC_ActGapTime %>%
 
 
 
-```{r, Unemployment Rate a}
+```{r, message=FALSE, warning=FALSE}
 
 ##### II a) Evolution of unemployment over the time in EU
 PC_UnempUE=PC_Unemp %>% 
@@ -460,7 +464,7 @@ ggplot(PC_UnempUE) +
 ```
 
 
-```{r, Parttime a}
+```{r, message=FALSE, warning=FALSE}
 ##### IV a) Cartographie partime total
 
 # cartographie Total
@@ -489,7 +493,8 @@ ggplot(mapdatapartime, aes(x = long, y = lat, group = group))+
 
 ### faire cartogram animée pour toutes les années 
 ```
-```{r, Parttime b}
+
+```{r, message=FALSE, warning=FALSE}
 
 ##### IV b) 3 graphs 
 # Gap H - F
@@ -536,7 +541,7 @@ PartTime %>%
 ```
 
 
-```{r, Temporary}
+```{r, message=FALSE, warning=FALSE}
 ##### V a)
 
 # How country have the hightest rate of woman that didn't want to find a job
@@ -549,7 +554,7 @@ NowantF%>%filter(values==maxnowant) # Slovénie 46.5%
 ```
 
 
-```{r, Gap Paid }
+```{r, message=FALSE, warning=FALSE}
 
 #### VI a)graph of the evolution og Gap paid in Europe 
 PC_Gapaid2 %>% 
@@ -561,7 +566,7 @@ PC_Gapaid2 %>%
   geom_vline(xintercept = 4 , color = "purple", size=1.5)
             
 ```
-```{r}
+```{r, message=FALSE, warning=FALSE}
 # #### VI b) Cartogram mean gap paid by gender between european countries in 2017
  
 datacart <- get_eurostat(id= "earn_gr_gpgr2", time_format = "date", filters = "none",
@@ -590,7 +595,7 @@ ggplot(mapdata, aes(x = long, y = lat, group = group))+
 ### faire cartogram animée pour toutes les années 
 
 ```
-```{r, Gap Paidb}
+```{r, message=FALSE, warning=FALSE}
 
 # filter PC_Gapaid2 for work on max min medium
 PC_Gapaid22017=PC_Gapaid2%>% filter(time=="2017")
