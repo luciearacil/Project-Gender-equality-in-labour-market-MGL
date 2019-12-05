@@ -186,14 +186,21 @@ PC_Gapaid <- doc9 %>%
 PC_Gapaid2 <- PC_Gapaid %>% 
   group_by(country, time) %>%
   summarise(mean_gappaid_percountry = mean(PC_gap))
-
 ```
 
 ## Comparative study of the state of gender equality in the labour market between European countries
 
 ### Intro 
 
-A ECRIRE
+<p style="text-align:justify;"> 
+  Based on a figure provided by Eurostat, the European Union's statistical agency, which states that "French women earn 15.4% less than men", meaning that they work on a voluntary basis from 5 November at 16:47 until 31 December. 
+  As french women that are going to enter the world of work in the years to come, the authors decided in this report to focus on the topic of gender equality in the working place throughout Europe. Therefore this study will be a comparison of data collected in each European country from 2006 to 2018 on 18-64 year old population. The data used can be found on Eurostat open source database (see references in the source section). The period studied has been chosen depending on the available data and allow to provides a pre/post financial crisis analysis. The age group studied is the most appropriate considering that most citizens enter the world of work at least at the age of 18 and leave it at around 64. 
+  The objective is to see if the working place is becoming more egalitarian over the years. Who are today the good students and the bad students in terms of gender equality at work? We may have in mind that the best countries on gender equality matter are nordic countries, but are the results consistent with the assumptions we have? 
+  This analysis is exploring the difference between men and women on: activity rate, long-term unemployment rate, part-time employment, temporary employment and gap paid (divided into 6 parts), in order to discover which country is the best to work in Europe when you are a woman. </p>
+
+### Methodology 
+
+<p style="text-align:justify;"> The first step was to import the dataframe from Eurostat open source database with the Eurostat package. Then, the following step was to tidy the dataframe in order to only have the data needed for the analysis and classify them to make it easier for r to make graphs. It means suppressing the missing value, filtering only the interesting data for the analysis (countries, period, age) and changing wide dataframe to long dataframe. The third step was to analyse and make the data speak for themselves by creating plots. The last one was to try to find explanatory variables to those results by comparing them with socio-demographic variables through correlation analysis. </p>
 
 ### Partie 1: Activity rate evolution and difference 
 
@@ -250,10 +257,9 @@ activityrate_m2018 <- PC_Act[57,5]
 activityrate_w2018 <- PC_Act[16,5]
 gap_activityrate_2018 <- activityrate_m2018 - activityrate_w2018
 ```
-
-<p style="text-align:justify;"> The activity rate increase between 2006 and 2018 for both women and men overall. Generally, women always have an activity rate lower than the men. 
-We can notice that 2011 is a turning point: Before 2011, the activity rate for men was stagnating around 83% while activity rate for women was increasing. After 2011, the activity rate for men start to slightly increase to reach 'r EUR28_men_activityrate_2018' in 2018. Concerning, women activity rate after 2011, it keep increasing a bit faster than before 2011: Indeed, The Beta of the trend before 2011 was 'r betaslope1' while the Beta after 2011 was betaslope2.  Women activity rate finally reach 'r EUR28_wom_activityrate_2018' in 2018. 
-Despite, a positive evolution of the activity rate for women for the concerned period, the gap between men and women activity rate remain almost unchanged. In 2006, the difference in percentage between men and women activity rate was 'r gap_activityrate_2006' while in 2018 this gap in percentage was 'r gap_activityrate_2018'. </p> ### code pour justifier texte
+The activity rate increase between 2006 and 2018 for both women and men overall. Generally, women always have an activity rate lower than the men. 
+We can notice that 2011 is a turning point: Before 2011, the activity rate for men was stagnating around 83% while activity rate for women was increasing. After 2011, the activity rate for men start to slightly increase to reach `r EUR28_men_activityrate_2018` in 2018. Concerning, women activity rate after 2011, it keep increasing a bit faster than before 2011: Indeed, The Beta of the trend before 2011 was `r betaslope1` while the Beta after 2011 was `betaslope2`.  Women activity rate finally reach `r EUR28_wom_activityrate_2018` in 2018. 
+Despite, a positive evolution of the activity rate for women for the concerned period, the gap between men and women activity rate remain almost unchanged. In 2006, the difference in percentage between men and women activity rate was `r gap_activityrate_2006` while in 2018 this gap in percentage was `r gap_activityrate_2018`.
 
 #### Gap activity rate 2018 in Europe
 
