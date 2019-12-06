@@ -40,7 +40,7 @@ doc5 <- get_eurostat(id= "une_rt_a", time_format = "date", filters = "none", typ
 doc6 <- get_eurostat(id= "une_ltu_a", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc7<- get_eurostat(id= "demo_gind", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc8<- get_eurostat(id= "nama_10_gdp", time_format = "date", filters = "none", type = "code", cache = TRUE)
-doc9<- get_eurostat(id= "earn_gr_gpgr2", time_format = "date", filters = "none", type = "code", cache = TRUE)   
+doc9<- get_eurostat(id= "earn_gr_gpgr2", time_format = "date", filters = "none", type = "code", cache = TRUE) 
 
 # Check if there are missing values
 any(is.na(doc1))
@@ -71,7 +71,7 @@ sum(is.na(doc7))
 sum(is.na(doc8)) 
 sum(is.na(doc9)) 
 
-# date format
+# Set date format
 doc1$time <- format(doc1$time, "%Y")
 doc2$time <- format(doc2$time, "%Y")
 doc3$time <- format(doc3$time, "%Y")
@@ -81,12 +81,12 @@ doc6$time <- format(doc6$time, "%Y")
 doc7$time <- format(doc7$time, "%Y")
 doc9$time <- format(doc9$time, "%Y")
 
-# only the doc8 is not as date so we change it in date format before
+# Only the doc8 is not as date so we change it in date format before
 class(doc8$time)
 doc8$time=as.Date(doc8$time,"%Y-%m-%d")
 doc8$time <- format(doc8$time,"%Y")
 
-# filter to keep data from 2006 
+# Filter to keep data from 2006 
 doc1=doc1 %>% filter(time>=2006)
 doc2=doc2 %>% filter(time>=2006)
 doc3=doc3 %>% filter(time>=2006)
@@ -97,7 +97,7 @@ doc7=doc7 %>% filter(time>=2006)
 doc8=doc8 %>% filter(time>=2006)
 doc9=doc9 %>% filter(time>=2006)
 
-# filter to keep data from 20-64 year old category
+# Filter to keep data from 20-64 year old category
 doc1=doc1%>% filter(age== "Y20-64")
 doc2=doc2%>% filter(age== "Y20-64")
 doc3=doc3%>% filter(age== "Y20-64")
@@ -105,7 +105,7 @@ doc4=doc4%>% filter(age== "Y20-64")
 doc6=doc6%>% filter(age== "Y20-64")
 doc5=doc5%>% filter(age== "TOTAL")
 
-# delete age column
+# Delete age column
 doc1=doc1%>% select(-"age")
 doc2=doc2%>% select(-"age")
 doc3=doc3%>% select(-"age")
@@ -116,13 +116,11 @@ doc6=doc6%>% select(-"age")
 # we keep just PC (pourcentage) unit column
 doc1=doc1%>% filter(unit== "PC_POP")
 doc1=doc1%>% select(-"unit")
-doc2=doc2%>% select(-"unit") # il n'y a que PC
+doc2=doc2%>% select(-"unit")
 doc3=doc3%>% select(-"unit")
 doc9=doc9%>% select(-"unit")
 
 # Rename columns, rename labels inside columns, suppress useless stuffs and rename documents
-
-              ### Reminder supprimer total partout car ils dérangent quand on fait les graphiques et ils                          peuvent être calculé en additionnant H + F 
 
 ## doc 1 : PC_Act
 doc1 <- doc1 %>% 
@@ -149,9 +147,7 @@ PC_Partime <- doc3 %>%
 ## doc 4 : PC_Temp 
 doc4 <- doc4 %>% 
   rename(country=geo, PC_emp=unit)  %>% 
-  ### Column PC_emp diviser entre employement et part-time employement qu'est ce que ça veut dire ??? doit on garder   que part time ?? Où le % part time est construit par rapport au % employment ? 
   filter(reason !="NRP") 
-  ### Filter TOTAL mais que pour la category TEMPORARY parce qu'on se fou de savoir que le total des cinq = 100% ? 
 doc4$PC_emp <- car::recode(doc4$PC_emp,'
   "PC_SAL"="employment";"PC_SAL_TEMP"="Temporary"')
 doc4$reason <- car::recode(doc4$reason,'
@@ -159,7 +155,6 @@ doc4$reason <- car::recode(doc4$reason,'
 PC_Temp <- doc4
 
 ## doc 5 : PC_Unemp 
-### pourquoi pas le supprimer ??? on peut calculer % unemp grâce à emp ? 
 PC_Unemp <- doc5 %>% 
   rename(country=geo, PC_unemp=unit) %>% 
   filter(PC_unemp !="THS_PER", PC_unemp !="PC_POP") %>% ### def chomage = unemp / pop active
@@ -184,7 +179,6 @@ GDPandVA <- doc8  %>%
   filter(unit == "CP_MEUR")
 
 ## doc 9 : PC_Gapaid 
-### Voir quoi faire de la colonne nace_r2????
 PC_Gapaid <- doc9 %>% 
   rename(country=geo, PC_gap=values)
 PC_Gapaid2 <- PC_Gapaid %>% 
@@ -192,7 +186,7 @@ PC_Gapaid2 <- PC_Gapaid %>%
   summarise(mean_gappaid_percountry = mean(PC_gap))
 ```
 
-## Intro 
+## Intro
 
 <p style="text-align:justify;"> 
   Based on a figure provided by Eurostat, the European Union's statistical agency, which states that "French women earn 15.4% less than men", meaning that they work on a voluntary basis from 5 November at 16:47 until 31 December. 
@@ -205,8 +199,6 @@ PC_Gapaid2 <- PC_Gapaid %>%
 <p style="text-align:justify;"> The first step was to import the dataframe from Eurostat open source database with the Eurostat package. Then, the following step was to tidy the dataframe in order to only have the data needed for the analysis and classify them to make it easier for r to make graphs. It means suppressing the missing value, filtering only the interesting data for the analysis (countries, period, age) and changing wide dataframe to long dataframe. The third step was to analyse and make the data speak for themselves by creating plots. The last one was to try to find explanatory variables to those results by comparing them with socio-demographic variables through correlation analysis. </p>
 
 ## Part 1: Activity rate evolution and difference 
-
-### Evolution of activity rate in Europe from 2006 to 2018: Man VS. Woman
 
 ```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
 
@@ -229,12 +221,10 @@ grobM <- grobTree(textGrob(c(ARM06,ARM18), x=c(0.01,0.9) , y=c(0.9,0.95), hjust=
 PC_Act %>% 
   filter(country =="EU28") %>% group_by(sex)%>% ggplot(.,) +
   geom_line(aes(x=time,y=PC_act,colour=sex,group=sex),size=1) +  
-  labs(title="Evolution of Activity   Rate between woman & men ") +
-  xlab("time") + ylab("activity rate")+ ylim(40,90)+
+  labs(title="Evolution of Activity rate between woman & men ") +
+  xlab("Year") + ylab("Activity rate")+ ylim(40,90)+
   theme(axis.text.x = element_text(angle=38)) +
   annotation_custom(grobM)+annotation_custom(grobF)
-
-### RENOMMER les axes
 
 # Code à mettre dans le paragraphe
 
@@ -247,7 +237,6 @@ betaslope_wom<- PC_Act %>% filter(time <= 2011, sex%in%c("F"), country=="EU28")
 betaslope1 <- lm(formula=betaslope_wom$time~betaslope_wom$PC_act,data=betaslope_wom)
 betaslope1<-coef(betaslope1)[2]  ### voir pour arrondir
 print(betaslope1)
-
 
 betaslope_tot <- PC_Act%>% filter(time<=2011, country=="EU28")
 betaslope2 <- lm(formula=betaslope_tot$PC_act~betaslope_tot$time, data=betaslope_tot)
@@ -633,6 +622,8 @@ PC_Gapaid2 %>%
             
 ```
 
+<p style="text-align:justify;"> Between 2010 and 2017, the gap paid between men and women decreased by 1.1% from 17,10% to 16% . Between 2011 and 2012 we had an slight increase up to 17.4% for the gap, right after this period we have a progressive decrease. What can explain this tendency? Since 2009, the Academy of European Law host annual seminars to discuss european law on equality between women and men. From 2014 to 202, series of seminars in the framework of the European Commission’s Right, Equality and Citizenship Programme have been held and will be host to fight inequality. </p>
+
 ```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
 # #### VI b) Cartogram mean gap paid by gender between european countries in 2017
  
@@ -644,8 +635,6 @@ type = "code", cache = TRUE) %>%
   mutate(cat = cut_to_classes(mean_gappaid_percountry, n=7, decimals=1))
  
 geocart <- get_eurostat_geospatial(resolution = "60", output_class = "df")
-
-### BIG WARNING MESSAGE
  
 mapdata <- datacart %>%
   inner_join(geocart, by = "geo")
@@ -659,9 +648,9 @@ ggplot(mapdata, aes(x = long, y = lat, group = group))+
        fill="Gap paid (%)") + theme_light()+
   coord_map(xlim=c(-40,40), ylim=c(25,73))
 
-### faire cartogram animée pour toutes les années 
-
 ```
+
+<p style="text-align:justify;"> There’s a lot of different situations in Europe regarding the gap paid between men and women in 2017. Some countries from Eastern Europe have a huge gap in wages from 15.6% to 20%, nordic countries score quite well with a gap going from 4.7% to 13. For countries from Western Europe it’s a mix of both situation. We will be focusing on 3 countries : Estonia with the highest gap, Finland with the median gap and finally Roumania with the lowest gap. </p>
 
 ```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
 
@@ -700,6 +689,10 @@ PC_Gapaid2 %>%
 ```
 
 ## Conclusion
+
+```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
+library(crayon)
+```
 
 ## Reference
 
