@@ -304,9 +304,10 @@ ggplot(data=map_data) + geom_sf(aes(fill=class),color="dim grey",size=0.1)+
 
 ```
 
-Countries in red are those with the lowest gap of activity rate between woman and men. On the map above, we can see that the countries with the lowest gap of activity rate are mostly countries from the north of Europe : The scandinavian peninsula countries (Norway, Finland, Sweden, Denmark and Iceland), two other countries from the baltic region (Latvia and Lithuania) plus Portugal and Romania. The results concerning the Scandinavian countries are consistent with the expectations because scandinavian countries are known to be equalitarian on gender matter. However, it is a little more surprising for the other countries. Even more surprising the country with the lowest activity rate gap is ...(mettre code pour Romania) with … (mettre code pour %).  
+Countries in red are those with the lowest gap of activity rate between woman and men. On the map above, we can see that the countries with the lowest gap of activity rate are mostly countries from the north of Europe : The scandinavian peninsula countries (Norway, Finland, Sweden, Denmark and Iceland), two other countries from the baltic region (Latvia and Lithuania) plus Portugal and Romania. The results concerning the Scandinavian countries are consistent with the expectations because scandinavian countries are known to be equalitarian on gender matter. However, it is a little more surprising for the other countries. Even more surprising the country with the lowest activity rate gap isis Lithuania with ` r min_gapact ` % of gap between men and women for activity rate. This can be explain by the regulation there. Artcile 7 of  the LET (Lithunia on Equal Treatment) which prohibits discrimination in the job market on the grounds of gender, race, nationality, language and so on. The Office of Equal Opportunities Ombudsperson monitors and controls the implementation of this regulation by employers for exemple. 
 
-The countries with the higher gap of activity rate are depicted in dark and light blue. The one with the higher gender gap is … (mettre code pour Turkey) with … (mettre code pour %). This is consistent because Turkey is a country where the major religion is Islam and usually islamic woman are not allowed to work (with some exceptions). But we will not used Turkey for further analysis because it is not within the European Union. The higher gender gap within european countries can be found in .... (mettre code pour Italia) with … (mettre code pour %) (société machiste ???). 
+The countries with the higher gap of activity rate are depicted in dark and light blue. The one with the higher gender gap is … (mettre code pour Turkey) with … (mettre code pour %). This is consistent because Turkey is a country where the major religion is Islam and usually islamic woman are not allowed to work (with some exceptions). But we will not used Turkey for further analysis because it is not within the European Union. The higher gender gap within european countries can be found in Italy with ` r Italy_gap ` % .
+In 2007 a National reform plan was undertaken by the Italian government called the "Libro Verde" in order to increase women participation in the labour market such as the improvement of the quality of childcare services. This is important to underline the fact that women are less present in the labour force particularly because of the double burden of having to conciliate work life and family life. Despite these reforms, the figures speak for themeselves, Italian women are still not enough present in the labour market. But whi is that? The origins can  be found in Childhood, women are taught to know how to keep a house (cooking, cleaning, taking c care of the children and of their husband) meanwhile men are responsible for providing the family needs by working and earning money. Once again again, why is it like this? We can aslo find sources in Religion. Italy more than other countries in Eurrope is deeply influenced by the Bible, majority of Italians are Christians, 88% of them belong to the oman Catholic Church. 
 
 #### Correlation between the activity rate and the activity rate gap in 2006, 2010 and 2018 for all European countries
 
@@ -373,6 +374,7 @@ PC_Act_Gap %>%
   select(time, country, values, gap)
 ### No outliers, why ???
 ```
+The correlation between the activity rate and the gap activity rate for the years 2006,2010,2018 is    ‘ r cor_gap ‘ ,  this is negative a only tells us that the two variables, activity rate and gap activity rate are evolving in differents way. Let’s now see the correlation between gap activity rate and the GDP in 2018. The correlation is ‘ r cor_GDP ‘ , this underlines a small correlation between gap activity rate and GDP in EU for 2018. Commonly, the GP is a indicator of the wealth of a country, since the correlation is not that strong we can’t really say there’s a link.. 
 
 #### Correlation between the activity rate gap and the GDP in 2006, 2010 and 2018 for all European countries
 
@@ -408,6 +410,8 @@ cor(PC_GDP_Gap$values, PC_GDP_Gap$gap, method="pearson")
 
 ### faire correlogram animée pour toutes les années 
 ```
+Let’s now see the correlation between gap activity rate and the GDP in 2018. The correlation is ‘ r cor_GDP ‘ , this underlines a small correlation between gap activity rate and GDP in EU for 2018. Commonly, the GP is a indicator of the wealth of a country, since the correlation is not that strong we can’t really say there’s a link. 
+
 ```{r, Activity rate e}
 
 # Find the country with the lowest gap activity rate between woman & men  
@@ -454,8 +458,7 @@ PC_ActGapTime %>%
 
 
 ```
-
-
+We are focusing on 3 countries to see how they have evolved over time. W focused on the coutry with the highes activity gap (Italy), the lower gap (Lithiania) and the median gap (Belgieum) with ‘ r gap_BE ‘ . We have already discussed why we had those results for the first two, now let’s see why does Belgium has an activity gap rate that is higher than Lithuania. The reason behind a relatively important activity rate gap in Belgium is not legislation, it’s people state of mind. When asking to women why they think there’s such a gap between men and women in the labour market, ⅓ of them argue it is because it would have an negative impact on their careers to be wom, once again the double burden of being a woman in the labor force plays a role here. According to ⅓Belgium men, equality in employment opportunity for both gender is not yet a reality. The general tendency for the three countries is that gap activity rate is reducing in the period between 2006 and 2018. Going from ‘  r gap2006_It ‘ to ‘ r gap2018_It ‘ , from ‘ r gap2006_Bel ‘ to ‘ r gap2018_Bel ‘ and from ‘ r gap2006_Lit ‘ to ‘ r gap2018_Lit ‘ . 
 
 ```{r, message=FALSE, warning=FALSE}
 
@@ -468,7 +471,7 @@ ggplot(PC_UnempUE) +
 
 ### BIG ERROR MESSAGE
 ```
-
+From 2006 and 2018 the unemployment rate for both men and women décreased slightly from ‘ r une_men_2000 ‘to ‘ r une_men_2018 ‘ and from ‘ r une_wom_2000 ‘ to ‘ r une_wom_2018 ‘ . At the beginning we had  gap of over 2.5 % between men and women for unemployment, as both unemployment rate are decreasing the gap is still not closing before 2008. From 2008 the gap may have reduced, unemployment is raising for both sex until 2013. There are 2 main reasons behind it. First, the Financial crisis is touching Europe from 2008 a year after the US, one year after that Europe has to face its own debt crisis which started in  Greece.. Companies, unable to refinance their governments are strike with the consequences of both crisis. A lot of them stopped hiring people and even firing some people because they can’t keep up . After 2013, unemployment is decreasing for both men and women and in the meantime, it seems like the gap is also trying to come back to how it was before the crisis . We can argue that the reason why the unemployment rate was closing after the crisis is because in desperate times it might not make a difference that you’re a man or woman. 
 
 ```{r, message=FALSE, warning=FALSE}
 ##### IV a) Cartographie partime total
