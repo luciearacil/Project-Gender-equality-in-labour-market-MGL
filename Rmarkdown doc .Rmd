@@ -10,8 +10,7 @@ output:
 
 ```{r, include=FALSE}
 # Downloading require packages 
-#install.packages('eurostat')
-#install.packages('survival')
+
 library(eurostat)
 library(dplyr)
 library(tidyverse)
@@ -26,6 +25,10 @@ library(mosaic)
 library(scales)
 library(grid)
 library(ggrepel)
+library(gganimate)
+library(gifski)
+library(av)
+library(magick)
 
 # Downloading and naming the data frame from eurostat
 doc1 <- get_eurostat(id= "lfsi_emp_a", time_format = "date", filters = "none", type = "code", cache = TRUE)
@@ -326,11 +329,6 @@ PC_Act_Gap=PC_Act_Gap %>% filter(! country %in% c("EA17","EA18","EA19","EU15","E
 
 ### first attempt : gganimate
 
-library(gganimate)
-library(gifski)
-library(av)
-library(magick)
-
 PC_Act_Gapbis=PC_Act_Gap %>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28")) 
 
 gganimate_1 <- ggplot(data = PC_Act_Gapbis, aes(x=values, y=gap, color=country)) +
@@ -469,7 +467,6 @@ ggplot(PC_UnempUE) +
    geom_line(aes(x=time,y=PC_unemp,group=sex,colour=sex),size=0.5) + labs(title="Evolution of Unemployent Rate between wooman & men ") + xlab("time") + ylab("Unemployment rate")+ ylim(5,15)+theme(axis.text.x = element_text(angle=45))+geom_vline(xintercept = 9,
                 color = "purple", size=1.5) + theme_classic()+theme(axis.text.x = element_text(angle=38))
 
-### BIG ERROR MESSAGE
 ```
 From 2006 and 2018 the unemployment rate for both men and women décreased slightly from ‘ r une_men_2000 ‘to ‘ r une_men_2018 ‘ and from ‘ r une_wom_2000 ‘ to ‘ r une_wom_2018 ‘ . At the beginning we had  gap of over 2.5 % between men and women for unemployment, as both unemployment rate are decreasing the gap is still not closing before 2008. From 2008 the gap may have reduced, unemployment is raising for both sex until 2013. There are 2 main reasons behind it. First, the Financial crisis is touching Europe from 2008 a year after the US, one year after that Europe has to face its own debt crisis which started in  Greece.. Companies, unable to refinance their governments are strike with the consequences of both crisis. A lot of them stopped hiring people and even firing some people because they can’t keep up . After 2013, unemployment is decreasing for both men and women and in the meantime, it seems like the gap is also trying to come back to how it was before the crisis . We can argue that the reason why the unemployment rate was closing after the crisis is because in desperate times it might not make a difference that you’re a man or woman. 
 
@@ -477,7 +474,6 @@ From 2006 and 2018 the unemployment rate for both men and women décreased sligh
 ##### IV a) Cartographie partime total
 
 # cartographie Total
-
 
 PC_Partimecarte=PC_Partime %>% 
   filter(! country %in% c("EA17","EA18","EA19","EU15","EU28")) %>%
@@ -496,10 +492,11 @@ mapdatapartime <- PC_Partimecarte%>%
 ggplot(mapdatapartime, aes(x = long, y = lat, group = group))+
   geom_polygon(aes(fill=class), color="grey", size = .1)+ 
   scale_fill_brewer(palette ="Set2") +
-  labs(title="Precarity employment throughout Europe, 2017",
+  labs(title="Part time throughout Europe, 2017",
              fill="Part-time employment") + theme_light()+
   coord_map(xlim=c(-40,40), ylim=c(25,73))
 
+# changer les couleurs
 ### faire cartogram animée pour toutes les années 
 ```
 
@@ -546,11 +543,13 @@ PartTime %>%
   scale_color_discrete(label= c("Netherland","Norway", " Bulgaria")) + theme_light() +
   theme(axis.text.x = element_text(angle=38))
 
-# correlation 
+# correlation
+# avec le taux de naissance ( plus enfant plus de part time des femmes) 
 ```
 
 
 ```{r, message=FALSE, warning=FALSE}
+
 ##### V a)
 
 # How country have the hightest rate of woman that didn't want to find a job
@@ -559,13 +558,53 @@ PartTime %>%
 NowantF=PC_Temp%>%filter(time=="2018" & sex=="F"& reason=="NowantJob")
 maxnowant=max(NowantF$values)
 NowantF%>%filter(values==maxnowant) # Slovénie 46.5%
+```
+```{r}
+##### V b) No couldt find permanent job gap 
+
+# create data 
+NocouldF=PC_Temp%>%filter(sex=="F", reason=="NocoulJob",PC_emp=="Temporary")%>%
+  select(time,country,values)%>% rename("VF"="values")
+NocouldM=PC_Temp%>%filter(sex=="M", reason=="NocoulJob",PC_emp=="Temporary")%>%
+  select(time,country,values)%>% rename("VM"="values")
+Gapnocould=left_join(NocouldF,NocouldM,c("time","country"))
+Gapnocould$gap=Gapnocould$VM-Gapnocould$VF
+
+# Graph UE
+
+Gapnocould %>%filter(country=="EU28")%>% ggplot(.,)+
+  geom_line(aes(x=time,y=gap,group=1),size=1)+ylim(-10,10)+
+  geom_vline(xintercept = 2 , color = "blue", size=1)+
+  geom_vline(xintercept = 9 , color = "blue", size=1)+
+  labs(title="Gap to find a permanent job, evolution")
+
+# cartogrphy of european  country gap 
+# Mise en place pour cartogram
+Gapnocouldbis=Gapnocould %>% 
+  filter(! country %in% c("EA17","EA18","EA19","EU15","EU28"))%>% 
+  select(-VF,-VM)%>%filter(time=="2018")
+
+Gapnocouldbis=Gapnocouldbis %>% 
+  rename(CNTR_CODE=country) 
+
+Gapnocouldbis$class=cut_to_classes(Gapnocouldbis$gap, n=5, style="equal", decimals=1)
+geodata <- get_eurostat_geospatial(resolution = "60", nuts_level = "2", year = 2016)
+map_data <- inner_join(geodata, Gapnocouldbis,"CNTR_CODE")
+
+#cartogram 
+ggplot(data=map_data) + geom_sf(aes(fill=class),color="dim grey",size=0.1)+
+    scale_fill_brewer(palette = "RdBu") +
+    guides(fill = guide_legend(reverse=T, title = "euro")) +
+    labs(title="Gap of difficiluties to find a permanent job") +
+    theme_light()  +
+    coord_sf(xlim=c(-40,44), ylim=c(25,70))
 
 ```
 
 
 ```{r, message=FALSE, warning=FALSE}
 
-#### VI a)graph of the evolution og Gap paid in Europe 
+#### VI a)graph of the evolution of Gap paid in Europe 
 PC_Gapaid2 %>% 
   filter(country == "EU28")%>% ggplot(.,) +
   geom_line (aes(x=time,y=mean_gappaid_percountry,group=1 ) ,size=2) + 
@@ -616,6 +655,7 @@ mincountGP # RO, Roumania # 4.73% ( puis Marlte Belgique)
 
 # Country with the hogher gender paid gap
 maxGP2017=max(PC_Gapaid22017$mean_gappaid_percountry)
+
 maxcountGP=PC_Gapaid22017 %>% filter(mean_gappaid_percountry==maxGP2017)%>%select(country)
 maxcountGP # EE,Estonia # 20%, Republique Tcheque Autriche 
 
