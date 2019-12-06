@@ -246,11 +246,11 @@ print(EUR28_wom_activityrate_2018)
 
 betaslope_wom<- PC_Act %>% filter(time <= 2011, sex%in%c("F"), country=="EU28")
 betaslope1 <- lm(formula=betaslope_wom$time~betaslope_wom$PC_act,data=betaslope_wom)
-print(betaslope1)
+betaslope1=coef(betaslope1)[2]
 
 betaslope_tot <- PC_Act%>% filter(time<=2011, country=="EU28")
 betaslope2 <- lm(formula=betaslope_tot$PC_act~betaslope_tot$time, data=betaslope_tot)
-print(betaslope2)
+betaslope2=round(coef(betaslope2)[2])
 
 activityrate_m2006 <- PC_Act[994,5]
 activityrate_w2006 <- PC_Act[956,5]
@@ -261,7 +261,7 @@ activityrate_w2018 <- PC_Act[16,5]
 gap_activityrate_2018 <- activityrate_m2018 - activityrate_w2018
 ```
 The activity rate increase between 2006 and 2018 for both women and men overall. Generally, women always have an activity rate lower than the men. 
-We can notice that 2011 is a turning point: Before 2011, the activity rate for men was stagnating around 83% while activity rate for women was increasing. After 2011, the activity rate for men start to slightly increase to reach `r EUR28_men_activityrate_2018` in 2018. Concerning, women activity rate after 2011, it keep increasing a bit faster than before 2011: Indeed, The Beta of the trend before 2011 was `r betaslope1` while the Beta after 2011 was `betaslope2`.  Women activity rate finally reach `r EUR28_wom_activityrate_2018` in 2018. 
+We can notice that 2011 is a turning point: Before 2011, the activity rate for men was stagnating around 83% while activity rate for women was increasing. After 2011, the activity rate for men start to slightly increase to reach `r EUR28_men_activityrate_2018` in 2018. Concerning, women activity rate after 2011, it keep increasing a bit faster than before 2011: Indeed, The Beta of the trend before 2011 was `r betaslope1` while the Beta after 2011 was `r betaslope2`.  Women activity rate finally reach `r EUR28_wom_activityrate_2018` in 2018. 
 Despite, a positive evolution of the activity rate for women for the concerned period, the gap between men and women activity rate remain almost unchanged. In 2006, the difference in percentage between men and women activity rate was `r gap_activityrate_2006` while in 2018 this gap in percentage was `r gap_activityrate_2018`.
 
 #### Gap activity rate 2018 in Europe
