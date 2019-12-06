@@ -25,10 +25,12 @@ library(mosaic)
 library(scales)
 library(grid)
 library(ggrepel)
+library(ggthemes)
 library(gganimate)
 library(gifski)
 library(av)
 library(magick)
+
 
 # Downloading and naming the data frame from eurostat
 doc1 <- get_eurostat(id= "lfsi_emp_a", time_format = "date", filters = "none", type = "code", cache = TRUE)
@@ -40,6 +42,7 @@ doc6 <- get_eurostat(id= "une_ltu_a", time_format = "date", filters = "none", ty
 doc7<- get_eurostat(id= "demo_gind", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc8<- get_eurostat(id= "nama_10_gdp", time_format = "date", filters = "none", type = "code", cache = TRUE)
 doc9<- get_eurostat(id= "earn_gr_gpgr2", time_format = "date", filters = "none", type = "code", cache = TRUE)   
+doc10<- get_eurostat(id= "demo_fasec", time_format = "date", filters = "none", type = "code", cache = TRUE) 
 
 # Check if there are missing values
 any(is.na(doc1))
@@ -51,6 +54,7 @@ any(is.na(doc6))
 any(is.na(doc7))
 any(is.na(doc8))
 any(is.na(doc9))
+any(is.na(doc10))
 
 # Remove NA
 doc2=na.omit(doc2)
@@ -79,6 +83,7 @@ doc5$time <- format(doc5$time, "%Y")
 doc6$time <- format(doc6$time, "%Y")
 doc7$time <- format(doc7$time, "%Y")
 doc9$time <- format(doc9$time, "%Y")
+doc10$time <- format(doc10$time, "%Y")
 
 # only the doc8 is not as date so we change it in date format before
 class(doc8$time)
@@ -90,7 +95,6 @@ doc1=doc1 %>% filter(time>=2006)
 doc2=doc2 %>% filter(time>=2006)
 doc3=doc3 %>% filter(time>=2006)
 doc4=doc4 %>%filter(time>=2006)
-# doc5=doc5 %>%filter(time>=2006)
 doc6=doc6 %>%filter(time>=2006)
 doc7=doc7 %>% filter(time>=2006)
 doc8=doc8 %>% filter(time>=2006)
@@ -103,6 +107,7 @@ doc3=doc3%>% filter(age== "Y20-64")
 doc4=doc4%>% filter(age== "Y20-64")
 doc6=doc6%>% filter(age== "Y20-64")
 doc5=doc5%>% filter(age== "TOTAL")
+doc10=doc10%>% filter(age== "TOTAL",sex=="T")
 
 # delete age column
 doc1=doc1%>% select(-"age")
@@ -111,6 +116,7 @@ doc3=doc3%>% select(-"age")
 doc4=doc4%>% select(-"age")
 doc5=doc5%>% select(-"age")
 doc6=doc6%>% select(-"age")
+doc10=doc10%>% select(-"age")
 
 # we keep just PC (pourcentage) unit column
 doc1=doc1%>% filter(unit== "PC_POP")
@@ -118,6 +124,7 @@ doc1=doc1%>% select(-"unit")
 doc2=doc2%>% select(-"unit") # il n'y a que PC
 doc3=doc3%>% select(-"unit")
 doc9=doc9%>% select(-"unit")
+doc10=doc10%>% select(-"unit",-"sex")
 
 # Rename columns, rename labels inside columns, suppress useless stuffs and rename documents
 
@@ -180,7 +187,8 @@ Pop_evol <- doc7
 GDPandVA <- doc8  %>%  
   rename(country=geo) %>% 
   filter(na_item %in% c("B1GQ","B1G"))  %>%  
-  filter(unit == "CP_MEUR")
+  filter(unit == "CP_MEUR",na_item=="B1G")%>% select(-"unit",-'na_item')
+  
 
 ## doc 9 : PC_Gapaid 
 ### Voir quoi faire de la colonne nace_r2????
@@ -189,6 +197,10 @@ PC_Gapaid <- doc9 %>%
 PC_Gapaid2 <- PC_Gapaid %>% 
   group_by(country, time) %>%
   summarise(mean_gappaid_percountry = mean(PC_gap))
+
+## doc 10 : Number of Birth 
+Birth = doc10 %>% rename(country=geo)
+Birth$values=Birth$values/1000
 ```
 
 ## Comparative study of the state of gender equality in the labour market between European countries
@@ -208,6 +220,10 @@ PC_Gapaid2 <- PC_Gapaid %>%
 ### Partie 1: Activity rate evolution and difference 
 
 #### Evolution of activity rate in Europe from 2006 to 2018: Man VS. Woman
+```{r}
+GDP=GDPandVA%>%filter(! country %in% c("EA","EA12", "EA19","EU15", "EU28", "EU27_2019"))
+
+```
 
 ```{r, message=FALSE, warning=FALSE}
 
@@ -250,7 +266,7 @@ betaslope1=coef(betaslope1)[2]
 
 betaslope_tot <- PC_Act%>% filter(time<=2011, country=="EU28")
 betaslope2 <- lm(formula=betaslope_tot$PC_act~betaslope_tot$time, data=betaslope_tot)
-betaslope2=round(coef(betaslope2)[2])
+betaslope2=(coef(betaslope2)[2])
 
 activityrate_m2006 <- PC_Act[994,5]
 activityrate_w2006 <- PC_Act[956,5]
@@ -385,8 +401,7 @@ The correlation between the activity rate and the gap activity rate for the year
 cor(PC_Act_Gap$values, PC_Act_Gap$gap, method="pearson") ## CACHER CALCUL
 
 ## Vérification graphique
-PC_GDP_Gap_col1 <- GDPandVA %>% 
-  filter(na_item=="B1G") %>% 
+PC_GDP_Gap_col1 <- GDPandVA  %>% 
   select(values, time, country) %>% 
   filter(! country %in% c("EA","EA12", "EA19","EU15", "EU28", "EU27_2019")) 
   
@@ -499,6 +514,8 @@ ggplot(mapdatapartime, aes(x = long, y = lat, group = group))+
 
 # changer les couleurs
 ### faire cartogram animée pour toutes les années 
+
+
 ```
 
 ```{r, message=FALSE, warning=FALSE}
@@ -547,13 +564,39 @@ PartTime %>%
 # correlation
 # avec le taux de naissance ( plus enfant plus de part time des femmes) 
 ```
+```{r}
 
+# correlation betwenn woman part time rate and rate of birth
+
+# create data
+Birth=Birth %>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28"))
+PartF=PC_Partime%>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28"),sex=="F") %>%select("time","country","PC_parttime_onemp")
+Corrbirth= left_join(Birth,PartF,by=c("time","country"))
+# Some country are not in the both table so we remove NA
+any(is.na(Corrbirth))
+Corrbirth=na.omit(Corrbirth)
+# animate correlation
+gganimate_10 <- ggplot(data = Corrbirth, aes(x=values, y=PC_parttime_onemp, color=country)) +
+  geom_point(alpha = 0.5) +
+  labs(x = "Total Birth", y = "PC of partime activity for woomen") +
+  transition_states(time, 3, 1) + 
+  ease_aes('cubic-in-out')+
+  shadow_wake(wake_length = 0.1, alpha = FALSE) +
+  labs(title = 'time: {frame_time}', x = 'time', y = 'PC_parttime_onemp')
+
+
+gganimate_10
+
+
+```
 
 ```{r, message=FALSE, warning=FALSE}
 
 ##### V a)
 
-# How country have the hightest rate of woman that didn't want to find a job
+
+
+# How country have the hightest rate of woman that didn't want to find a permanent job
 # doc4 = PC_Temp
 
 NowantF=PC_Temp%>%filter(time=="2018" & sex=="F"& reason=="NowantJob")
