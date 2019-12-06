@@ -261,7 +261,7 @@ activityrate_w2018 <- PC_Act[16,5]
 gap_activityrate_2018 <- activityrate_m2018 - activityrate_w2018
 ```
 The activity rate increase between 2006 and 2018 for both women and men overall. Generally, women always have an activity rate lower than the men. 
-We can notice that 2011 is a turning point: Before 2011, the activity rate for men was stagnating around 83% while activity rate for women was increasing. After 2011, the activity rate for men start to slightly increase to reach `r EUR28_men_activityrate_2018` in 2018. Concerning, women activity rate after 2011, it keep increasing a bit faster than before 2011: Indeed, The Beta of the trend before 2011 was `r betaslope1` while the Beta after 2011 was `betaslope2`.  Women activity rate finally reach `r EUR28_wom_activityrate_2018` in 2018. 
+We can notice that 2011 is a turning point: Before 2011, the activity rate for men was stagnating around 83% while activity rate for women was increasing. After 2011, the activity rate for men start to slightly increase to reach `r EUR28_men_activityrate_2018` in 2018. Concerning, women activity rate after 2011, it keep increasing a bit faster than before 2011: Indeed, The Beta of the trend before 2011 was `r betaslope1` while the Beta after 2011 was `r betaslope2`.  Women activity rate finally reach `r EUR28_wom_activityrate_2018` in 2018. 
 Despite, a positive evolution of the activity rate for women for the concerned period, the gap between men and women activity rate remain almost unchanged. In 2006, the difference in percentage between men and women activity rate was `r gap_activityrate_2006` while in 2018 this gap in percentage was `r gap_activityrate_2018`.
 
 #### Gap activity rate 2018 in Europe
@@ -679,4 +679,46 @@ PC_Gapaid2 %>%
   scale_color_discrete(label= c(" Estonia", "Finland", "Roumania")) + theme_light() +
   theme(axis.text.x = element_text(angle=38))
 ```
+
+### Reference
+
+#### Open source data from Eurostat
+
+- Employment and activity by sex and age - annual data from 2006 to 2018:
+https://appsso.eurostat.ec.europa.eu/nui/show.do?query=BOOKMARK_DS-053312_QID_-4AAC19A_UID_-3F171EB0&layout=SEX,L,X,0;GEO,L,Y,0;AGE,L,Z,0;UNIT,L,Z,1;TIME,C,Z,2;INDIC_EM,L,Z,3;INDICATORS,C,Z,4;&zSelection=DS-053312INDIC_EM,EMP_LFS;DS-053312AGE,Y15-64;DS-053312TIME,2015;DS-053312UNIT,PC_POP;DS-053312INDICATORS,OBS_FLAG;&rankName1=UNIT_1_2_-1_2&rankName2=AGE_1_2_-1_2&rankName3=INDICATORS_1_2_-1_2&rankName4=INDIC-EM_1_2_-1_2&rankName5=TIME_1_0_0_0&rankName6=SEX_1_2_0_0&rankName7=GEO_1_2_0_1&rStp=&cStp=&rDCh=&cDCh=&rDM=true&cDM=true&footnes=false&empty=false&wai=false&time_mode=ROLLING&time_most_recent=true&cfo=%23%23%23%2C%23%23%23.%23%23%23&lang=en
+- Employment rates by sex, age and educational attainment level - annual data from 2006 to 2018:
+https://appsso.eurostat.ec.europa.eu/nui/show.do?query=BOOKMARK_DS-055844_QID_-6C2A0300_UID_-3F171EB0&layout=SEX,L,X,0;GEO,L,Y,0;TIME,C,Z,0;AGE,L,Z,1;ISCED11,L,Z,2;UNIT,L,Z,3;INDICATORS,C,Z,4;&zSelection=DS-055844TIME,2014;DS-055844AGE,Y15-64;DS-055844UNIT,PC;DS-055844ISCED11,ED5-8;DS-055844INDICATORS,OBS_FLAG;&rankName1=TIME_1_0_-1_2&rankName2=ISCED11_1_2_-1_2&rankName3=UNIT_1_2_-1_2&rankName4=GEO_1_2_0_1&rankName5=AGE_1_2_-1_2&rankName6=INDICATORS_1_2_-1_2&rankName7=SEX_1_2_0_0&rStp=&cStp=&rDCh=&cDCh=&rDM=true&cDM=true&footnes=false&empty=false&wai=false&time_mode=ROLLING&time_most_recent=true&lang=EN&cfo=%23%23%23%2C%23%23%23.%23%23%23&lang=en
+- Part-time employment as percentage of the total employment, by sex, age and citizenship - annual data from 2006 to 2018:
+https://appsso.eurostat.ec.europa.eu/nui/show.do?query=BOOKMARK_DS-182929_QID_-642059E2_UID_-3F171EB0&layout=SEX,L,X,0;GEO,L,Y,0;TIME,C,Z,0;AGE,L,Z,1;CITIZEN,L,Z,2;UNIT,L,Z,3;INDICATORS,C,Z,4;&zSelection=DS-182929AGE,Y15-64;DS-182929CITIZEN,TOTAL;DS-182929TIME,2014;DS-182929UNIT,PC;DS-182929INDICATORS,OBS_FLAG;&rankName1=TIME_1_0_-1_2&rankName2=UNIT_1_2_-1_2&rankName3=GEO_1_2_0_1&rankName4=AGE_1_2_-1_2&rankName5=CITIZEN_1_2_-1_2&rankName6=INDICATORS_1_2_-1_2&rankName7=SEX_1_2_0_0&rStp=&cStp=&rDCh=&cDCh=&rDM=true&cDM=true&footnes=false&empty=false&wai=false&time_mode=ROLLING&time_most_recent=true&lang=EN&cfo=%23%23%23%2C%23%23%23.%23%23%23&lang=en
+- Temporary employees by sex, age and main reason - annual data from 2006 to 2018: https://appsso.eurostat.ec.europa.eu/nui/show.do?query=BOOKMARK_DS-052930_QID_-D7E2DA6_UID_-3F171EB0&layout=TIME,C,X,0;GEO,L,Y,0;SEX,L,Z,0;AGE,L,Z,1;REASON,L,Z,2;UNIT,L,Z,3;INDICATORS,C,Z,4;&zSelection=DS-052930SEX,T;DS-052930UNIT,PC_SAL;DS-052930AGE,Y15-64;DS-052930INDICATORS,OBS_FLAG;DS-052930REASON,TOTAL;&rankName1=UNIT_1_2_-1_2&rankName2=REASON_1_2_-1_2&rankName3=AGE_1_2_-1_2&rankName4=INDICATORS_1_2_-1_2&rankName5=SEX_1_2_-1_2&rankName6=TIME_1_0_0_0&rankName7=GEO_1_2_0_1&sortC=ASC_-1_FIRST&rStp=&cStp=&rDCh=&cDCh=&rDM=true&cDM=true&footnes=false&empty=false&wai=false&time_mode=ROLLING&time_most_recent=false&lang=EN&cfo=%23%23%23,%23%23%23.%23%23%23&lang=en
+- Unemployment by sex and age - annual average: https://appsso.eurostat.ec.europa.eu/nui/show.do?query=BOOKMARK_DS-055418_QID_75B3FF18_UID_-3F171EB0&layout=SEX,L,X,0;GEO,L,Y,0;AGE,L,Z,0;UNIT,L,Z,1;TIME,C,Z,2;INDICATORS,C,Z,3;&zSelection=DS-055418INDICATORS,OBS_FLAG;DS-055418UNIT,PC_ACT;DS-055418AGE,TOTAL;DS-055418TIME,2015;&rankName1=TIME_1_0_0_0&rankName2=UNIT_1_2_-1_2&rankName3=AGE_1_2_-1_2&rankName4=INDICATORS_1_2_-1_2&rankName5=SEX_1_2_0_0&rankName6=GEO_1_2_0_1&rStp=&cStp=&rDCh=&cDCh=&rDM=true&cDM=true&footnes=false&empty=false&wai=false&time_mode=ROLLING&time_most_recent=false&cfo=%23%23%23%2C%23%23%23.%23%23%23&lang=en
+- Evolution of population: https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=demo_gind&lang=fr
+- GDP per country: https://appsso.eurostat.ec.europa.eu/nui/show.do?dataset=nama_10_gdp&lang=en
+- Gender paid gap from 2007 to 2017: https://ec.europa.eu/eurostat/databrowser/view/tesem180/default/table?lang=en
+- Growth employment rate: https://ec.europa.eu/eurostat/databrowser/view/tesem040/default/table?lang=fr
+
+#### Complementary informations
+
+- https://www.eurofound.europa.eu/country/lithuania#equality-and-nondiscrimination-at-work
+- https://start.lesechos.fr/emploi-stages/management/a-16h38-les-femmes-deviennent-benevoles-pour-le-reste-de-l-annee-6396.php
+
+#### Useful data to upgrade rmarkdown report
+
+- Eurostat package cheat sheet: https://rstudio.com/resources/cheatsheets/
+-Create a triangle plot: https://www.rdocumentation.org/packages/plotrix/versions/3.7-6/topics/triax.plot
+- Theme for graph: http://www.sthda.com/french/wiki/ggplot2-themes-et-couleurs-de-fond-les-3-elements-logiciel-r-et-visualisation-de-donnees
+- To create a cartogram with eurostat package: https://statistique-et-logiciel-r.com/a-la-decouverte-des-statistiques-europeennes-deurostat/
+- To create a cartogram with eurostat package: https://rdrr.io/cran/eurostat/man/get_eurostat_geospatial.html
+- Coulours for graphs: http://rstudio-pubs-static.s3.amazonaws.com/5312_98fc1aba2d5740dd849a5ab797cc2c8d.html
+- Help for graph: https://cedricscherer.netlify.com/2019/08/05/a-ggplot2-tutorial-for-beautiful-plotting-in-r/#colors
+- Economic activities:https://en.wikipedia.org/wiki/Statistical_Classification_of_Economic_Activities_in_the_European_Community
+- Themes R markdown :https://cran.r-project.org/web/packages/prettydoc/vignettes/hpstr.html
+- Gapminder: https://www.gapminder.org/tools/?from=world#$chart-type=bubbles
+- Gganimate: https://github.com/thomasp85/gganimate
+- Animated data vizualisation: https://towardsdatascience.com/create-hans-roslings-famous-animated-bubble-chart-in-a-single-piped-r-command-9c50a485259
+- Animated data vizualisation: https://towardsdatascience.com/animating-your-data-visualizations-like-a-boss-using-r-f94ae20843e3
+- Animated a card:https://d4tagirl.com/2017/05/how-to-plot-animated-maps-with-gganimate
+- Plotly: https://plot.ly/r/animations/
+- Create a bubble plot: https://www.r-graph-gallery.com/320-the-basis-of-bubble-plot.html
+- Add labels to graph: http://directlabels.r-forge.r-project.org/
 
