@@ -34,6 +34,9 @@ library(gganimate)
 library(gifski)
 library(av)
 library(magick)
+library(crayon)
+library(plotly)
+library(datasauRus)
 
 
 # Downloading and naming the data frame from eurostat
@@ -258,7 +261,6 @@ PC_Act %>%
   geom_vline(xintercept = 6 , color = "black", size=1)
 
 # Code à mettre dans le paragraphe
-
 EUR28_men_activityrate_2018 <- PC_Act[57,5]
 print(EUR28_men_activityrate_2018)
 EUR28_wom_activityrate_2018 <- PC_Act[16,5]
@@ -266,16 +268,13 @@ print(EUR28_wom_activityrate_2018)
 betaslope_wom<- PC_Act %>% filter(time <= 2011, sex%in%c("F"), country=="EU28")
 betaslope1 <- lm(formula=betaslope_wom$time~betaslope_wom$PC_act,data=betaslope_wom)
 betaslope1=coef(betaslope1)[2]
-
-betaslope_tot <- PC_Act%>% filter(time<=2011, country=="EU28")
-betaslope1 <- lm(formula=betaslope_tot$PC_act~betaslope_tot$time, data=betaslope_tot)
-betaslope1<-coef(betaslope1)[2] 
-betaslope1=round(betaslope1,3)
-print(betaslope1)
-
 betaslope_tot <- PC_Act%>% filter(time<=2011, country=="EU28")
 betaslope2 <- lm(formula=betaslope_tot$PC_act~betaslope_tot$time, data=betaslope_tot)
-betaslope2<-(coef(betaslope2)[2]) 
+betaslope1=round(betaslope1,3)
+print(betaslope1)
+betaslope_tot <- PC_Act%>% filter(time<=2011, country=="EU28")
+betaslope2 <- lm(formula=betaslope_tot$PC_act~betaslope_tot$time, data=betaslope_tot)
+betaslope2<-(coef(betaslope2)[2])
 betaslope2=round(betaslope2,3)
 print(betaslope2)
 
@@ -350,7 +349,7 @@ In 2007 a National reform plan was undertaken by the Italian government called t
 
 <p style="text-align:justify;"> In 2007 a National reform plan was undertaken by the Italian government called the "Libro Verde" in order to increase women participation in the labour market such as the improvement of the quality of childcare services. This is important to underline the fact that women are less present in the labour force particularly because of the double burden of having to conciliate work life and family life. Despite these reforms, the figures speak for themeselves, Italian women are still not enough present in the labour market. But why is that? The origins can  be found in Childhood, women are taught to know how to keep a house (cooking, cleaning, taking care of the children and of their husband) meanwhile men are responsible for providing the family needs by working and earning money. Once again, why is it like this? We can aslo find sources in Religion. Italy more than other countries in Europe is deeply influenced by the Bible, majority of Italians are Christians, 88% of them belong to the Roman Catholic Church. </p>
 
-```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
+```{r, message=FALSE, warning=FALSE, fig.align='center'}
 
 ##### I c) Corrélation taux d'activité total & Gap taux d'activité in 2006-2010-2018
 
@@ -370,13 +369,13 @@ PC_Act_Gapbis=PC_Act_Gap %>% filter(! country %in% c("EA17","EA18","EA19","EU15"
 gganimate_1 <- ggplot(data = PC_Act_Gapbis, aes(x=values, y=gap, color=country)) +
   geom_point(alpha = 0.5) +
   labs(x = "Total activity rate", y = "Activity gap between men and women") +
-  transition_states(time, 3, 1) + 
-  ease_aes('cubic-in-out')
+  transition_states(time, 1, 1) + 
+  ease_aes('cubic-in-out')+
+  ggplot2::geom_text(aes(x = 70, y = 30, label = time), 
+                     size = 14, color = 'lightgrey', 
+                     family = 'Oswald')
 
 gganimate_1
-
-### AJOUTER LES ANNEES EN FOND
-
 ```
 
 ```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
@@ -635,18 +634,29 @@ There are  way more women doing part time job in Netherlands, they are 58.3 perc
 Birth=Birth %>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28"))
 PartF=PC_Partime%>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28"),sex=="F") %>%select("time","country","PC_parttime_onemp")
 Corrbirth= left_join(Birth,PartF,by=c("time","country"))
+Pop=Pop_evol %>% filter(indic_de=="T")%>%select(-'indic_de')%>%rename("Pop"="values","country"="geo")
+Corrbirth= left_join(Corrbirth,Pop,by=c("time","country"))
 # Some country are not in the both table so we remove NA
 any(is.na(Corrbirth))
 Corrbirth=na.omit(Corrbirth)
-# animate correlation
-gganimate_10 <- ggplot(data = Corrbirth, aes(x=values, y=PC_parttime_onemp, color=country)) +
-  geom_point(alpha = 0.5) +
-  labs(x = "Total Birth", y = "PC of partime activity for woomen") +
-  transition_states(time, 3, 1) + 
-  ease_aes('cubic-in-out')+
-  shadow_wake(wake_length = 0.1, alpha = FALSE)
- 
-gganimate_10
+
+# Animate plot
+
+ Corrbirth%>% plot_ly(
+    x = ~values, 
+    y = ~PC_parttime_onemp,
+    size = ~Pop,
+    color = ~country, 
+    frame = ~time, 
+    text = ~country, 
+    hoverinfo = "text",
+    type = 'scatter',
+    mode = 'markers')%>%
+   layout (
+     xaxis = list( title = "Number of Births"),
+     yaxis=list(title="PC of partime activity for woomen in thousands"))
+    
+  
 ```
 <p style="text-align:justify;"> Bulgaria is the country in Europe with le lowest rate of women in part time jobs, in 2006 it was 0.4% , it went to 0.1% in 12 years. An article from the World Bank published in March 2019 called “ Bulgaria Emerges as champion in Women Legal Rights Affecting Work “ help us understand this figure. Bulgaria is one of the 6 countries that removed all job restrictions on women over 10 years. The government wants to ensure gender equality in labour market, they believe that a world where women who have the skills to work in what they want to work would not only be fairer but also could benefit all. Women in Bulgaria occupy important high posts in politics, the President of the Parliament is a woman, so is he capital city mayor and 2 deputies ministers. 
 There are  way more women doing part time job in Netherlands, they are 58.3 percent. From 1980 to 2016 women have been more present in the labour force, the percentage of women working in the Netherlands went from 35% to 70% , but 60% of them are actually doing part time jobs. Part time jobs offers job satisfaction, free time for children care and also free time for leisure activities. In Netherlands, the average father works five days a week whereas the average mother works 3 days a week, this can be explained by the fact that twice as many women as men look after the household and children.  </p>
@@ -792,7 +802,10 @@ PC_Gapaid2 %>%
 
 ## Conclusion
 
-
+```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
+cat(green$italic('T'%+%red('H')%+%yellow('E'),blue('E')%+% yellow('N')%+% magenta('D')%+% '!\n'))
+# plus plot du dynausore qui est dansle drive à la fin 
+```
 
 ## Reference
 
