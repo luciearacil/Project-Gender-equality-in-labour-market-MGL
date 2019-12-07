@@ -230,11 +230,6 @@ Birth$values=Birth$values/1000
 ## Part 1: Activity rate evolution 
 
 
-```{r}
-GDP=GDPandVA%>%filter(! country %in% c("EA","EA12", "EA19","EU15", "EU28", "EU27_2019"))
-
-```
-
 ```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
 
 ###### I a) Evolution of activity rate in UE of 28, between woman & man
@@ -259,7 +254,8 @@ PC_Act %>%
   labs(title="Evolution of Activity rate between woman & men ") +
   xlab("Year") + ylab("Activity rate")+ ylim(40,90)+
   theme(axis.text.x = element_text(angle=38)) +
-  annotation_custom(grobM)+annotation_custom(grobF)
+  annotation_custom(grobM)+annotation_custom(grobF)+
+  geom_vline(xintercept = 6 , color = "black", size=1)
 
 # Code à mettre dans le paragraphe
 
@@ -267,22 +263,21 @@ EUR28_men_activityrate_2018 <- PC_Act[57,5]
 print(EUR28_men_activityrate_2018)
 EUR28_wom_activityrate_2018 <- PC_Act[16,5]
 print(EUR28_wom_activityrate_2018)
-library(mosaic)
 betaslope_wom<- PC_Act %>% filter(time <= 2011, sex%in%c("F"), country=="EU28")
 betaslope1 <- lm(formula=betaslope_wom$time~betaslope_wom$PC_act,data=betaslope_wom)
 betaslope1=coef(betaslope1)[2]
 
 betaslope_tot <- PC_Act%>% filter(time<=2011, country=="EU28")
-betaslope2 <- lm(formula=betaslope_tot$PC_act~betaslope_tot$time, data=betaslope_tot)
-betaslope2<-coef(betaslope2)[2]  ### voir pour arrondir
-print(betaslope2)
+betaslope1 <- lm(formula=betaslope_tot$PC_act~betaslope_tot$time, data=betaslope_tot)
+betaslope1<-coef(betaslope1)[2] 
+betaslope1=round(betaslope1,3)
+print(betaslope1)
 
 betaslope_tot <- PC_Act%>% filter(time<=2011, country=="EU28")
 betaslope2 <- lm(formula=betaslope_tot$PC_act~betaslope_tot$time, data=betaslope_tot)
-betaslope2<-(coef(betaslope2)[2]) ### voir pour arrondir
+betaslope2<-(coef(betaslope2)[2]) 
+betaslope2=round(betaslope2,3)
 print(betaslope2)
-
-
 
 activityrate_m2006 <- PC_Act[994,5]
 activityrate_w2006 <- PC_Act[956,5]
@@ -333,7 +328,8 @@ ggplot(data=map_data) + geom_sf(aes(fill=class),color="dim grey",size=0.1)+
     guides(fill = guide_legend(reverse=T, title = "euro")) +
     labs(title="Gender Gap of Activity rate in European Country in 2018") +
     theme_light()  +
-    coord_sf(xlim=c(-40,44), ylim=c(25,70))
+    coord_sf(xlim=c(-40,44), ylim=c(25,70))+
+    xlab("") + ylab("")
 
 ### voir si on peux faire cartogram animée avec toute les années et pays change de couleur en fonction de l'évolution
 
@@ -348,15 +344,13 @@ In 2007 a National reform plan was undertaken by the Italian government called t
 
 ### Correlation between the activity rate and the activity rate gap in 2006, 2010 and 2018 for all European countries
 
-```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
-
 <p style="text-align:justify;"> Countries in red are those with the lowest gap of activity rate between women and men. On the map above, we can see that the countries with the lowest gap of activity rate are mostly countries from the north of Europe : The scandinavian peninsula countries (Norway, Finland, Sweden, Denmark and Iceland), two other countries from the baltic region (Latvia and Lithuania) plus Portugal and Romania. The results concerning the Scandinavian countries are consistent with the expectations because scandinavian countries are known to be equalitarian on gender matter. However, it is a little more surprising for the other countries. Even more surprising the country with the lowest activity rate gap is Lithuania with r min_gapact % of gap between men and women for activity rate. This can be explain by the regulation there. Artcile 7 of  the LET (Lithunia on Equal Treatment) which prohibits discrimination in the job market on the grounds of gender, race, nationality, language and so on. The Office of Equal Opportunities Ombudsperson monitors and controls the implementation of this regulation by employers for exemple. </p>
 
 <p style="text-align:justify;"> The countries with the higher gap of activity rate are depicted in dark and light blue. The one with the higher gender gap is … (mettre code pour Turkey) with … (mettre code pour %). This is consistent because Turkey is a country where the major religion is Islam and usually islamic woman are not allowed to work (with some exceptions). But we will not used Turkey for further analysis because it is not within the European Union. The higher gender gap within european countries can be found in Italy with r Italy_gap % . </p>
 
 <p style="text-align:justify;"> In 2007 a National reform plan was undertaken by the Italian government called the "Libro Verde" in order to increase women participation in the labour market such as the improvement of the quality of childcare services. This is important to underline the fact that women are less present in the labour force particularly because of the double burden of having to conciliate work life and family life. Despite these reforms, the figures speak for themeselves, Italian women are still not enough present in the labour market. But why is that? The origins can  be found in Childhood, women are taught to know how to keep a house (cooking, cleaning, taking care of the children and of their husband) meanwhile men are responsible for providing the family needs by working and earning money. Once again, why is it like this? We can aslo find sources in Religion. Italy more than other countries in Europe is deeply influenced by the Bible, majority of Italians are Christians, 88% of them belong to the Roman Catholic Church. </p>
 
-```{r, message=FALSE, warning=FALSE, fig.align='center'}
+```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
 
 ##### I c) Corrélation taux d'activité total & Gap taux d'activité in 2006-2010-2018
 
@@ -415,7 +409,7 @@ PC_Act_Gap %>%
   filter(time == "2018") %>%
   filter(gap>30) %>%
   select(time, country, values, gap)
-### No outliers, why ???
+
 ```
 
 
@@ -455,7 +449,6 @@ ggplot(data = PC_GDP_Gap, aes(x=values, y=gap, color=country)) +
 cor(PC_GDP_Gap$values, PC_GDP_Gap$gap, method="pearson")
 ## 0,26 = faiblement corrélé positivement 
 
-### faire correlogram animée pour toutes les années 
 ```
 
 <p style="text-align:justify;"> Let’s now see the correlation between gap activity rate and the GDP in 2018. The correlation is ‘ r cor_GDP ‘ , this underlines a small correlation between gap activity rate and GDP in EU for 2018. Commonly, the GP is a indicator of the wealth of a country, since the correlation is not that strong we can’t really say there’s a link. </p>
@@ -520,9 +513,6 @@ PC_ActGapTime %>%
 PC_UnempUE=PC_Unemp %>% 
   filter(country =="EU28") %>% filter(!sex%in%("T")) %>% group_by(sex)
 ggplot(PC_UnempUE) +
-<<<<<<< HEAD
-   geom_line(aes(x=time,y=PC_unemp,group=sex,colour=sex),size=0.5) + labs(title="Evolution of Unemployent Rate between wooman & men ") + xlab("time") + ylab("Unemployment rate")+ ylim(5,15)+theme(axis.text.x = element_text(angle=45))+geom_vline(xintercept = 9,
-=======
    geom_line(aes(x=time,y=PC_unemp,group=sex,colour=sex),size=0.5) + labs(title="Evolution of Unemployment rate between women & men") + xlab("time") + ylab("Unemployment rate")+ ylim(5,15)+theme(axis.text.x = element_text(angle=45))+geom_vline(xintercept = 9,
                 color = "purple", size=1.5) + theme_classic()+theme(axis.text.x = element_text(angle=38))
 
@@ -535,34 +525,54 @@ ggplot(PC_UnempUE) +
 ## Part 3: Part-time employment 
 
 ```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
-##### IV a) Cartographie partime total
+##### III a) Cartographie partime total
 
-# cartographie Total
+# cartographieW Women
 
-PC_Partimecarte=PC_Partime %>% 
+PC_PartimecarteF=PC_Partime %>% 
   filter(! country %in% c("EA17","EA18","EA19","EU15","EU28")) %>%
-  filter(sex=="T",time=="2018")
+  filter(sex=="F",time=="2018")
 
-PC_Partimecarte$class = cut_to_classes(PC_Partimecarte$PC_parttime_onemp, n=5,
+PC_PartimecarteF$class = cut_to_classes(PC_PartimecarteF$PC_parttime_onemp, n=5,
                                        style="equal", decimals=1)
 
 geocart <- get_eurostat_geospatial(resolution = "60", output_class = "df")
 geocart <- geocart %>% 
   rename(country =CNTR_CODE)
  
-mapdatapartime <- PC_Partimecarte%>%
+mapdatapartimeF <- PC_PartimecarteF %>%
   inner_join(geocart, by = "country")
 
-ggplot(mapdatapartime, aes(x = long, y = lat, group = group))+
+ggplot(mapdatapartimeF, aes(x = long, y = lat, group = group))+
   geom_polygon(aes(fill=class), color="grey", size = .1)+ 
   scale_fill_brewer(palette ="Set2") +
-<<<<<<< HEAD
-  labs(title="Part time throughout Europe, 2017",
-=======
-  labs(title="Part-time employement throughout Europe, 2017",
->>>>>>> f3d30456eb5d7634f1424a1dc4c3091c0db02304
+  labs(title="Woman Part-time employement throughout Europe, 2017",
              fill="Part-time employment") + theme_light()+
-  coord_map(xlim=c(-40,40), ylim=c(25,73))
+  coord_map(xlim=c(-40,40), ylim=c(25,73))+
+  xlab("") + ylab("")
+
+# for men
+PC_PartimecarteM=PC_Partime %>% 
+  filter(! country %in% c("EA17","EA18","EA19","EU15","EU28")) %>%
+  filter(sex=="M",time=="2018")
+
+PC_PartimecarteM$class = cut_to_classes(PC_PartimecarteM$PC_parttime_onemp, n=5,
+                                       style="equal", decimals=1)
+
+geocart <- get_eurostat_geospatial(resolution = "60", output_class = "df")
+geocart <- geocart %>% 
+  rename(country =CNTR_CODE)
+ 
+mapdatapartimeM <- PC_PartimecarteM %>%
+  inner_join(geocart, by = "country")
+
+ggplot(mapdatapartimeM, aes(x = long, y = lat, group = group))+
+  geom_polygon(aes(fill=class), color="grey", size = .1)+ 
+  scale_fill_brewer(palette ="Set2") +
+  labs(title="Men Part-time employement throughout Europe, 2017",
+             fill="Part-time employment") + theme_light()+
+  coord_map(xlim=c(-40,40), ylim=c(25,73)) +
+  xlab("") + ylab("")
 
 ```
 
@@ -570,7 +580,7 @@ ggplot(mapdatapartime, aes(x = long, y = lat, group = group))+
 
 ```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
 
-##### IV b) 3 graphs 
+##### III b) 3 graphs 
 # Gap H - F
 
 TabF=PC_Partime %>% filter(sex=="F") %>% rename(PC_PF= PC_parttime_onemp)%>% select(-"sex")
@@ -606,18 +616,11 @@ EUpt# 22.8
 PartTime %>% 
   filter(country %in%c("NO","BG","NL")) %>% group_by(country)%>% ggplot(.,) +
   geom_line(aes(x=time,y=gap,colour=country,group=country),size=1) +
-<<<<<<< HEAD
-  labs(title="Evolution of par ime gap activity rate over time  ") + xlab("time") +
-=======
   labs(title="Evolution of part-time gap activity rate over years  ") + xlab("time") +
->>>>>>> f3d30456eb5d7634f1424a1dc4c3091c0db02304
   ylab("gap paid") +
   scale_color_discrete(label= c("Netherland","Norway", " Bulgaria")) + theme_light() +
   theme(axis.text.x = element_text(angle=38))
 
-<<<<<<< HEAD
-# correlation
-# avec le taux de naissance ( plus enfant plus de part time des femmes) 
 ```
 
 <p style="text-align:justify;"> Bulgaria is the country in Europe with le lowest rate of women in part time jobs, in 2006 it was 0.4% , it went to 0.1% in 12 years. An article from the World Bank published in March 2019 called “ Bulgaria Emerges as champion in Women Legal Rights Affecting Work “ help us understand this figure. Bulgaria is one of the 6 countries that removed all job restrictions on women over 10 years. The government wants to ensure gender equality in labour market, they believe that a world where women who have the skills to work in what they want to work would not only be fairer but also could benefit all. Women in Bulgaria occupy important high posts in politics, the President of the Parliament is a woman, so as the capital city mayor and 2 deputies ministers. 
@@ -651,9 +654,7 @@ There are  way more women doing part time job in Netherlands, they are 58.3 perc
 ## Part 4: Temporary employment 
 
 ```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
-##### V a)
-
-
+##### IV a)
 
 # How country have the hightest rate of woman that didn't want to find a permanent job
 # doc4 = PC_Temp
@@ -664,7 +665,7 @@ NowantF%>%filter(values==maxnowant) # Slovénie 46.5%
 ```
 
 ```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
-##### V b) No couldt find permanent job gap 
+##### IV b) No couldt find permanent job gap 
 
 # create data 
 NocouldF=PC_Temp%>%filter(sex=="F", reason=="NocoulJob",PC_emp=="Temporary")%>%
@@ -681,7 +682,7 @@ Gapnocould %>%filter(country=="EU28")%>% ggplot(.,)+
   geom_vline(xintercept = 2 , color = "blue", size=1)+
   geom_vline(xintercept = 9 , color = "blue", size=1)+
   labs(title="Struggling differences between men and women to find a permanent job for whole Europe")
->>>>>>> f3d30456eb5d7634f1424a1dc4c3091c0db02304
+
 
 # cartogrphy of european  country gap 
 # Mise en place pour cartogram
@@ -702,7 +703,8 @@ ggplot(data=map_data) + geom_sf(aes(fill=class),color="dim grey",size=0.1)+
     guides(fill = guide_legend(reverse=T, title = "euro")) +
     labs(title="Struggling differences between men and women to find a permanent job") +
     theme_light()  +
-    coord_sf(xlim=c(-40,44), ylim=c(25,70))
+    coord_sf(xlim=c(-40,44), ylim=c(25,70))+
+    xlab("") + ylab("")
 
 ```
 
@@ -724,7 +726,7 @@ PC_Gapaid2 %>%
 <p style="text-align:justify;"> Between 2010 and 2017, the gap paid between men and women decreased by 1.1% from 17,10% to 16% . Between 2011 and 2012 we had an slight increase up to 17.4% for the gap, right after this period we have a progressive decrease. What can explain this tendency? Since 2009, the Academy of European Law host annual seminars to discuss european law on equality between women and men. From 2014 to 202, series of seminars in the framework of the European Commission’s Right, Equality and Citizenship Programme have been held and will be host to fight inequality. </p>
 
 ```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
-# #### VI b) Cartogram mean gap paid by gender between european countries in 2017
+# #### V b) Cartogram mean gap paid by gender between european countries in 2017
  
 datacart <- get_eurostat(id= "earn_gr_gpgr2", time_format = "date", filters = "none",
 type = "code", cache = TRUE) %>% 
@@ -745,7 +747,8 @@ ggplot(mapdata, aes(x = long, y = lat, group = group))+
   labs(title="Gap paid between men and women throughout Europe, 2017",
        subtitle="Avg. gap paid per country",
        fill="Gap paid (%)") + theme_light()+
-  coord_map(xlim=c(-40,40), ylim=c(25,73))
+       coord_map(xlim=c(-40,40), ylim=c(25,73))+
+       xlab("") + ylab("")
 
 ```
 
@@ -777,7 +780,7 @@ medcountGP # Finland
 EUGP=PC_Gapaid22017%>%filter(country=="EU28")
 EUGP # 16%
 
-##### VI c)  graph of the evolution of 3 gap wages over tme
+##### V c)  graph of the evolution of 3 gap wages over tme
 
 PC_Gapaid2 %>% 
   filter(country %in%c("FI","EE","RO")) %>% group_by(country)%>% ggplot(.,) +
@@ -789,9 +792,7 @@ PC_Gapaid2 %>%
 
 ## Conclusion
 
-```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
-library(crayon)
-```
+
 
 ## Reference
 
