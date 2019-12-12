@@ -834,6 +834,34 @@ https://appsso.eurostat.ec.europa.eu/nui/show.do?query=BOOKMARK_DS-182929_QID_-6
 
 - https://www.eurofound.europa.eu/country/lithuania#equality-and-nondiscrimination-at-work
 - https://start.lesechos.fr/emploi-stages/management/a-16h38-les-femmes-deviennent-benevoles-pour-le-reste-de-l-annee-6396.php
+https://www.thebulletin.be/gender-discrimination-work-continues-belgium-study-shows
+ 
+- https://www.worldbank.org/en/news/press-release/2019/03/01/bulgaria-emerges-as-champion-in-women-legal-rights-affecting-work
+ 
+- https://www.worldbank.org/en/news/press-release/2019/03/01/bulgaria-emerges-as-champion-in-women-legal-rights-affecting-work
+ 
+- https://www.hollandalumni.nl/medias/editor/files/gender-equality-in-the-netherlands.pdf
+ 
+ 
+- https://www.era.int/cgi-bin/cms?_SID=new&_sprache=en&_persistant_variant=/Our%20programme/Seminar%20series/EC%20Anti-Discrimination%20Legislation&_bereich=artikel&_aktion=detail&idartikel=121643
+ 
+ 
+- http://www.praxis.ee/en/works/assessing-gender-pay-gaps-in-estonia/
+ 
+ 
+- https://stm.fi/documents/1271139/5825735/STM_tyoelama_UK_verkko.pdf/4090143b-ed30-4301-a49a-2ebab69c6a4d/STM_tyoelama_UK_verkko.pdf.pdf
+ 
+ 
+- http://business-review.eu/news/world-bank-romanian-women-thrive-in-traditionally-male-dominated-jobs-201699
+
+- https://www.catalyst.org/research/women-in-the-workforce-europe/
+
+- https://www.refworld.org/pdfid/46cadad40.pdf
+ 
+-  https://timesofmalta.com/articles/view/malta-has-eus-largest-gender-employment-gap.646235
+
+- https://www.centralbankmalta.org/gender-inequality 
+
 
 ### Useful data to upgrade rmarkdown report
 
