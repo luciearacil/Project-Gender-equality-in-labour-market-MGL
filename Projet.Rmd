@@ -347,7 +347,7 @@ PC_Act_Gapbis=PC_Act_Gap %>% filter(! country %in% c("EA17","EA18","EA19","EU15"
 
 gganimate_1 <- ggplot(data = PC_Act_Gapbis, aes(x=values, y=gap, color=country)) +
   geom_point(alpha = 0.5) +
-  labs(title="Correlation between the activity rate and the activity rate gap in 2006, 2010 and 2018 for all European countries") +
+  labs(title="Correlation between the activity rate and the activity rate gap in 2006, 2010 and 2018") +
   labs(x = "Total activity rate", y = "Activity gap between men and women") +
   transition_states(time, 1, 1) + 
   ease_aes('cubic-in-out')+
@@ -417,7 +417,7 @@ ggplot(data = PC_GDP_Gap, aes(x=values/100, y=gap, color=country)) +
   geom_point() +
   geom_smooth(method = "lm", se=FALSE) +
   facet_wrap(~time) +
-  labs(title="Correlation between the activity rate gap and the GDP in 2006, 2010 and 2018 for all European countries") + xlab("GDP in ") +
+  labs(title="Correlation between the activity rate gap and the GDP in 2006, 2010 and 2018") + xlab("GDP in ") +
   ylab("Activity rate gap") 
 
 ## Calculer coef de correlation 
@@ -515,7 +515,7 @@ mapdatapartimeF <- PC_PartimecarteF %>%
 ggplot(mapdatapartimeF, aes(x = long, y = lat, group = group))+
   geom_polygon(aes(fill=class), color="grey", size = .1)+ 
   scale_fill_brewer(palette ="Set2") +
-  labs(title="Woman Part-time employement throughout Europe, 2017",
+  labs(title="Women Part-time employement throughout Europe, 2017",
              fill="Part-time employment") + theme_light()+
   coord_map(xlim=c(-40,40), ylim=c(25,73))+
   xlab("") + ylab("")
