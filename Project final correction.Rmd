@@ -14,6 +14,9 @@ output:
 
 ```{r, include=FALSE}
 # Downloading require packages 
+library(htmltools)
+# install.packages('vembedr')
+library(vembedr)
 library(eurostat)
 library(dplyr)
 library(tidyverse)
@@ -183,6 +186,12 @@ Birth$values=Birth$values/1000
 ```
 
 ## Introduction
+```{r}
+embed_url("https://www.youtube.com/watch?v=9i75RdWIVTQ")%>%
+  div(align = "center")
+```
+
+Link for the screen cast on youtube : https://www.youtube.com/watch?v=9i75RdWIVTQ 
 
 <p style="text-align:justify;"> 
   Based on a figure provided by Eurostat, the European Union's statistical agency, which states that "French women earn 15.4% less than men", meaning that they work on a voluntary basis from 5 November at 16:47 until 31 December. Shocking right ?  </p>
@@ -250,7 +259,7 @@ Despite, a positive evolution of the activity rate for women for the concerned p
 
 ```{r, message=FALSE, warning=FALSE, fig.align='center'}
 ###### I b) Cartograme, Gap Activity Rate Zone UE
-# Data pour gap activity rate
+# Data for gap activity rate
 PC_GapFem= PC_Act %>% filter(sex=="F")
 PC_GapFem=PC_GapFem %>% rename(f_act= PC_act) 
 PC_GapFem=PC_GapFem%>%  select(f_act,time,country)
@@ -258,7 +267,7 @@ PC_GapMal= PC_Act %>% filter(sex=="M")
 PC_GapMal=PC_GapMal%>%rename(m_act= PC_act) %>% select(m_act,time,country)
 PC_ActGap=left_join(PC_GapFem,PC_GapMal,by=c('time','country'))
 PC_ActGap$gap=PC_ActGap$m_act-PC_ActGap$f_act
-# Mise en place pour cartogram
+# framework cartogram
 PC_ActGapTime=PC_ActGap
 PC_ActGap=PC_ActGap %>% 
   filter(! country %in% c("EA17","EA18","EA19","EU15","EU28"))%>% 
@@ -268,8 +277,8 @@ PC_ActGap <- PC_ActGap %>%
 PC_ActGap$class=cut_to_classes(PC_ActGap$gap, n=10, style="equal", decimals=1)
 geodata <- get_eurostat_geospatial(resolution = "60", nuts_level = "2", year = 2016)
 map_data <- inner_join(geodata, PC_ActGap)
-#cartogram 
 
+#cartogram 
 ggplot(data=map_data) + geom_sf(aes(fill=class),color="dim grey",size=0.1)+
     scale_fill_brewer(palette = "RdBu") +
     guides(fill = guide_legend(reverse=T, title = "euro")) +
@@ -289,18 +298,18 @@ ggplot(data=map_data) + geom_sf(aes(fill=class),color="dim grey",size=0.1)+
 <p style="text-align:justify;">In 2007 a National reform plan was undertaken by the Italian government called the "Libro Verde" in order to increase women participation in the labour market such as the improvement of the quality of childcare services. This is important to underline the fact that women are less present in the labour force particularly because of the double burden of having to conciliate work life and family life. Despite these reforms, the figures speak for themeselves, Italian women are still not enough present in the labour market. But why? The origins can  be found in Childhood, women are taught to know how to keep a house (cooking, cleaning, taking care of the children and of their husband) meanwhile men are responsible for providing the family needs by working and earning money. Once again, why is it like this? We can aslo find answers in Religion. Italy more than other countries in Europe is deeply influenced by the Bible, majority of Italians are Christians, 88% of them belong to the oman Catholic Church. </p>
 
 ```{r, message=FALSE, warning=FALSE, fig.align='center'}
-##### I c) Corrélation taux d'activité total & Gap taux d'activité in 2006-2010-2018
-PC_Act_Gap_col1=doc1 %>% filter(sex=="T") %>% filter(category=="Actif") %>%select(values, time, country)
+##### I c) Corrélation total actiity rate & Gap in activity rate 
+PC_Act_Gap_col1=doc1 %>% filter(sex=="T") %>% filter(category=="Actif") %>% select(values, time, country)
 PC_Act_Gap_col2=PC_ActGapTime %>% select(gap, time, country)
 PC_Act_Gap=inner_join(PC_Act_Gap_col1, PC_Act_Gap_col2, by=c('time','country'))
 PC_Act_Gap=PC_Act_Gap %>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28")) 
 
-## Graphique animate
+## Graph animate
 ### first attempt : gganimate
 PC_Act_Gapbis=PC_Act_Gap %>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28")) 
 gganimate_1 <- ggplot(data = PC_Act_Gapbis, aes(x=values, y=gap, color=country)) +
   geom_point(alpha = 0.5) +
-  labs(title="Correlation between the activity rate and the activity rate gap in 2006, 2010 and 2018") +
+  labs(title="Correlation between the activity rate and the activity rate gap") +
   labs(x = "Total activity rate", y = "Activity gap between men and women") +
   transition_states(time, 1, 1) + 
   ease_aes('cubic-in-out')+
@@ -340,9 +349,9 @@ PC_Act_Gap %>%
 
 ```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
 ##### I d)Corrélation Gap activity rate and GDP in 2018
-## Calculer coef de correlation 
-cor(PC_Act_Gap$values, PC_Act_Gap$gap, method="pearson") ## CACHER CALCUL
-## Vérification graphique
+## coefficient of correlation 
+cor(PC_Act_Gap$values, PC_Act_Gap$gap, method="pearson")
+## Checking
 PC_GDP_Gap_col1 <- GDPandVA  %>% 
   select(values, time, country) %>% 
   filter(! country %in% c("EA","EA12", "EA19","EU15", "EU28", "EU27_2019")) 
@@ -402,7 +411,7 @@ PC_ActGapTime %>%
 ```
 
 
-<p style="text-align:justify;"> We are focusing on 3 countries to see how they have evolved over time. We focused on the country with the highest activity gap (Italy), the lower activity gap (Lithuania) and the median gap (Belgium) with 9.5% . We have already discussed why we had those results for the first two, now let’s see why does Belgium has an activity gap rate that is higher than Lithuania. The reason behind a relatively important activity rate gap in Belgium is not legislation, it’s people state of mind. When asking to women why they think there’s such a gap between men and woman in the labour market, ⅓ of them argue it is because it would have a negative impact on their careers to be a women, once again the double burden of being a woman in the labour force plays a role here. According to ⅓ Belgium men, equality in employment opportunity for both gender is not yet a reality. The general tendency for the three countries is that gap activity rate is reducing in the period between 2006 and 2018. Going from 25.4%  to 20.6 for Italy  , from 15,1% to 9.5 for Belgium and from 7.6% to 3.8% for Lithuania.  </p>
+<p style="text-align:justify;"> We are focusing on 3 countries to see how they have evolved over time. We focused on the country with the highest activity gap (Italy), the lowest activity gap (Lithuania) and the median gap (Belgium) with 9.5% . We have already discussed why we had those results for the first two, now let’s see why does Belgium has an activity gap rate that is higher than Lithuania. The reason behind a relatively important activity rate gap in Belgium is not legislation, it’s people state of mind. When asking to women why they think there’s such a gap between men and woman in the labour market, ⅓ of them argue it is because it would have a negative impact on their careers to be a women, once again the double burden of being a woman in the labour force plays a role here. According to ⅓ Belgium men, equality in employment opportunity for both gender is not yet a reality. The general tendency for the three countries is that gap activity rate is reducing in the period between 2006 and 2018. Going from 25.4%  to 20.6 for Italy  , from 15,1% to 9.5 for Belgium and from 7.6% to 3.8% for Lithuania.  </p>
 
 ## Part 2: Unemployment rate difference between men and women across european countries and over time
 
@@ -415,13 +424,13 @@ ggplot(PC_UnempUE) +
                 color = "purple", size=1.5) + theme_classic()+theme(axis.text.x = element_text(angle=38))
 ```
 
-<p style="text-align:justify;"> From 2006 and 2018 the unemployment rate for both men and women decreased slightly from 7.7% for men to less than 7.5% and from 10% for women to 7.5% . At the beginning we had  gap of over 2.5 % between men and women for unemployment, as both unemployment rate are decreasing the gap is still not closing before 2008. From 2008 the gap may have reduced, unemployment is raising for both sex until 2013. There are two main reasons behind it. First, the Financial crisis is touching Europe from 2008 a year after the US, one year after that Europe has to face its own debt crisis which started in  Greece. Companies, unable to refinance their governments are striked with the consequences of both crisis. A lot of them stopped hiring people and even firing some people because they can’t keep up. After 2013, unemployment is decreasing for both men and women and in the meantime, it seems like the gap is also trying to come back to how it was before the crisis . We can argue that the reason why the unemployment rate was closing after the crisis is because in desperate times it might not make a difference that you’re a man or woman.  </p>
+<p style="text-align:justify;"> From 2006 and 2018 the unemployment rate for both men and women decreased slightly from 7.7% for men to less than 7.5% and from 10% for women to 7.5% . At the beginning we had a gap of over 2.5 % between men and women for unemployment, as both unemployment rate are decreasing the gap is still not closing before 2008. From 2008 the gap may have reduced, unemployment is raising for both sex until 2013. There are two main reasons behind it. First, the Financial crisis is touching Europe from 2008 a year after the US, one year after that Europe has to face its own debt crisis which started in  Greece. Companies, unable to refinance their governments are striked with the consequences of both crisis. A lot of them stopped hiring people and even firing some people because they can’t keep up. After 2013, unemployment is decreasing for both men and women and in the meantime, it seems like the gap is also trying to come back to how it was before the crisis . We can argue that the reason why the unemployment rate was closing after the crisis is because in desperate times it might not make a difference that you’re a man or woman.  </p>
 
 ## Part 3: Part-time employment difference between men and women across european countries and over time
 
 ```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
-##### III a) Cartographie partime total
-# cartographieW Women
+##### III a) 
+# cartogram Women
 PC_PartimecarteF=PC_Partime %>% 
   filter(! country %in% c("EA17","EA18","EA19","EU15","EU28")) %>%
   filter(sex=="F",time=="2018")
@@ -519,7 +528,7 @@ PartTime %>%
 <p style="text-align:justify;"> There are  way more women doing part time job in Netherlands, they are 58.3 percent. From 1980 to 2016 women have been more present in the labour force, the percentage of women working in the Netherlands went from 35% to 70% , but 60% of them are actually doing part time jobs. Part time jobs offers job satisfaction, free time for children care and also free time for leisure activities. In Netherlands, the average father works five days a week whereas the average mother works 3 days a week, this can be explained by the fact that twice as many women as men look after the household and children.  </p>
 
 ```{r, message=FALSE, warning=FALSE, fig.align='center'}
-# correlation betwenn woman part time rate and rate of birth
+# correlation between woman part time rate and rate of birth
 # create data
 Birth=Birth %>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28"))
 PartF=PC_Partime%>% filter(! country %in% c("EA17","EA18","EA19","EU15","EU28"),sex=="F") %>%select("time","country","PC_parttime_onemp")
@@ -527,7 +536,7 @@ Corrbirth= left_join(Birth,PartF,by=c("time","country"))
 Pop=Pop_evol %>% filter(indic_de=="T")%>%select(-'indic_de')%>%rename("Pop"="values","country"="geo")
 Corrbirth= left_join(Corrbirth,Pop,by=c("time","country"))
 # Some country are not in the both table so we remove NA
-any(is.na(Corrbirth))
+# any(is.na(Corrbirth))
 Corrbirth=na.omit(Corrbirth)
 # Animate plot
  Corrbirth%>% plot_ly(
@@ -547,7 +556,7 @@ Corrbirth=na.omit(Corrbirth)
   
 ```
 
-<p style="text-align:justify;"> Once again we have various situtations in Europe when we try to understand the relationship between the births and women in part time work from 2006 to 2018. If we focus on France in purple it seems like there's a small change in the percentage of women in part time job depending on the number births. When there's more births there's a little less women in part time working, when the births decrease the number of women in part time job goes the other way.This might be because even when women are having part time job t is still hard for them to find time to take care of the children, once again double burden.  </p>
+<p style="text-align:justify;"> Once again we have various situtations in Europe when we try to understand the relationship between the births and women in part time work from 2006 to 2018. If we focus on France in purple it seems like there's a small change in the percentage of women in part time job depending on the number of births. When there's more births there's little less women in part time working, when the births decrease the number of women in part time job goes the other way.This might be because even when women are having part time job it is still hard for them to find time to take care of the children, once again double burden.  </p>
 
 ## Part 4: Temporary employment difference between men and women across european countries and over time
 
@@ -560,7 +569,7 @@ maxnowant=max(NowantF$values)
 NowantF%>%filter(values==maxnowant) # Slovénie 46.5%
 ```
 
-<p style="text-align:justify;"> In 2018, Slovenia was the country with the highest rate of women who didn't want to find a permanent job, the percentage was 46.5% . Let's try to find out why. We know that childcare is usually one of the main obstacle for women in the labour force, while in Slovenian they offered a good child care leave both for men and women this doesn't explain why we have a little than 50% of women who don't want to find a permanent job. </p>
+<p style="text-align:justify;"> In 2018, Slovenia was the country with the highest rate of women who didn't want to find a permanent job, the percentage was 46.5% . Let's try to find out why. We know that childcare is usually one of the main obstacle for women in the labour force, while in Slovenia they offered a good child care leave both for men and women this doesn't explain why we have a little than 50% of women who don't want to find a permanent job. </p>
 
 ```{r, message=FALSE, warning=FALSE, results='hide', fig.align='center'}
 ##### IV b) No couldt find permanent job gap 
@@ -576,9 +585,9 @@ Gapnocould %>%filter(country=="EU28")%>% ggplot(.,)+
   geom_line(aes(x=time,y=gap,group=1),size=1)+ylim(-10,10)+
   geom_vline(xintercept = 2 , color = "blue", size=1)+
   geom_vline(xintercept = 9 , color = "blue", size=1)+
-  labs(title="Struggling differences between men and women to find a permanent job for whole Europe")
-# cartogrphy of european  country gap 
-# Mise en place pour cartogram
+  labs(title="Struggling differences between men and women to find a permanent job")
+# cartogrphy of european countries gap 
+# work on data to map
 Gapnocouldbis=Gapnocould %>% 
   filter(! country %in% c("EA17","EA18","EA19","EU15","EU28"))%>% 
   select(-VF,-VM)%>%filter(time=="2018")
@@ -704,9 +713,8 @@ The country with the lowest gap paid is Roumania it went from 7% to 5% between 2
 Working on this project underlined two things : eastern europe countries seemed to be ahead when it comes to gender equality in the labour market and we still have some changes to do in the way we view women in our society in order to have more gender equality in general. In the countries of eastern europe, such as Roumania, Bulgaria and Lithuania huge efforts have been made in their legislation to help women to have a more active part in the labour market and be at the same level as men. Usually, these legislations aimed at reducing the double burden on women, they have to conciliate family life and work life. This double burden seemed to be one of  the main obstacle in gender equality regarding labour market. Let’s underline another reason for gender inequality in this area. The  role of women in our societies is still influenced by traditions, in many people min a woman has to take care of the house and children while the man provides for his family needs by working. This is taught from a young age to women like in Italy. Also religion seems to play a part in this. 
 We can say that inequalities in overall are reducing over years. But what does gender inequality look like if we focus on the very top of the income distribution? Do we find any evidence of the famous ‘glass ceiling’ preventing women from reaching the top? How did this change over time? There are still few women at the head of big companies and same for internationale organizations with eventually few exceptions. </p>
 
-# THE END
+THE END
 ```{r, message=FALSE, warning=FALSE, fig.align='center'}
-cat(green$italic('T'%+%red('H')%+%yellow('E'),blue('E')%+% yellow('N')%+% magenta('D')%+% '!\n'))
 # plot dyno
 ggplot(datasaurus_dozen, aes(x=x, y=y))+
   geom_point()+
@@ -778,3 +786,4 @@ https://www.thebulletin.be/gender-discrimination-work-continues-belgium-study-sh
 - Plotly: https://plot.ly/r/animations/
 - Create a bubble plot: https://www.r-graph-gallery.com/320-the-basis-of-bubble-plot.html
 - Add labels to graph: http://directlabels.r-forge.r-project.org/
+
